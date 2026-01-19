@@ -226,7 +226,7 @@
     <div class="draft-hero">
       <span class="season-badge" id="season-badge">2026 Season</span>
       <h1>Draft Selection Order</h1>
-      <p>Pick your draft position based on last season's elimination order</p>
+      <p id="draft-subtitle">Pick your draft position based on last season's elimination order</p>
     </div>
 
     <div class="draft-explanation">
@@ -284,12 +284,12 @@
           </svg>
           Death Bell
         </a>
-        <a href="/average-finishes" class="footer-link">
+        <a href="/season-recap" class="footer-link">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
           </svg>
-          Manager Profiles
+          Season Recap
         </a>
       </div>
       <p class="footer-note">
@@ -306,15 +306,24 @@
       const seasonBadge = document.getElementById('season-badge');
 
       try {
-        // Get available seasons and use the most recent one
+        // Get available seasons
         const seasonsInfo = await fetchAvailableSeasons();
-        const lastSeason = Math.max(...seasonsInfo.seasons);
-        const nextSeason = lastSeason + 1;
+        const allSeasons = seasonsInfo.seasons.sort((a, b) => a - b);
 
-        seasonBadge.textContent = `${nextSeason} Season`;
+        // The draft order is for the CURRENT/UPCOMING season
+        // Based on the PREVIOUS season's finishes
+        // If we have 2023, 2024, 2025, 2026 - draft order is for 2026 based on 2025
+        const currentSeason = allSeasons[allSeasons.length - 1];
+        const previousSeason = allSeasons[allSeasons.length - 2];
 
-        // Load last season's data
-        const data = await fetchSeasonData(lastSeason, 17);
+        seasonBadge.textContent = `${currentSeason} Season`;
+
+        // Update subtitle to show which season the order is based on
+        const subtitle = document.getElementById('draft-subtitle');
+        subtitle.textContent = `Draft pick selection order based on ${previousSeason} season finishes`;
+
+        // Load previous season's data (what the draft order is based on)
+        const data = await fetchSeasonData(previousSeason, 17);
 
         if (!data || !data.managers) {
           throw new Error('No data available');
@@ -336,7 +345,7 @@
               <tr>
                 <th>Pick #</th>
                 <th>Manager</th>
-                <th>Based On</th>
+                <th>${previousSeason} Finish</th>
               </tr>
             </thead>
             <tbody>
