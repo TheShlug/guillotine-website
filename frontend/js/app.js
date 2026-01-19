@@ -161,13 +161,15 @@ function setupEventListeners() {
         });
 
         // Update body class for view mode
-        document.body.classList.remove('mobile-cards', 'mobile-compact');
+        document.body.classList.remove('mobile-cards', 'mobile-compact', 'mobile-minimal');
         if (view === 'compact') {
           document.body.classList.add('mobile-compact');
         } else if (view === 'cards') {
           document.body.classList.add('mobile-cards');
+        } else if (view === 'minimal') {
+          document.body.classList.add('mobile-minimal');
         }
-        // 'default' view doesn't need a class - uses default mobile styles
+        // 'default' view doesn't need a class - shows full table
       }
     });
   }

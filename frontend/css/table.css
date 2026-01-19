@@ -482,41 +482,41 @@
   .guillotine-table tr.summary-chop td.manager-cell { background: var(--color-chop); }
   .guillotine-table tr.summary-diff td.manager-cell { background: var(--color-chop-delta); }
 
-  /* Hide less important columns on mobile - including in summary rows */
-  .col-draft,
-  .col-avg,
-  .col-faab-wasted,
-  .col-close-calls,
-  .guillotine-table td.col-draft,
-  .guillotine-table td.col-avg,
-  .guillotine-table td.col-faab-wasted,
-  .guillotine-table td.col-close-calls,
-  .guillotine-table th.col-draft,
-  .guillotine-table th.col-avg,
-  .guillotine-table th.col-faab-wasted,
-  .guillotine-table th.col-close-calls {
-    display: none !important;
-  }
-
-  /* Compact the remaining columns */
+  /* Compact all columns for mobile - keep them all visible by default */
   .col-faab {
-    width: 50px;
-    min-width: 50px;
+    width: 45px;
+    min-width: 45px;
   }
 
   .col-chop {
-    width: 40px;
-    min-width: 40px;
+    width: 35px;
+    min-width: 35px;
   }
 
   .col-manager {
-    width: 90px;
-    min-width: 90px;
+    width: 85px;
+    min-width: 85px;
   }
 
   .col-week {
-    width: 42px;
-    min-width: 42px;
+    width: 38px;
+    min-width: 38px;
+  }
+
+  .col-draft,
+  .col-avg,
+  .col-faab-wasted,
+  .col-close-calls {
+    width: 35px;
+    min-width: 35px;
+  }
+
+  /* OPTIONAL: Hide extra columns when user toggles "minimal" mode */
+  body.mobile-minimal .col-draft,
+  body.mobile-minimal .col-avg,
+  body.mobile-minimal .col-faab-wasted,
+  body.mobile-minimal .col-close-calls {
+    display: none !important;
   }
 
   /* Smaller badges */
