@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Draft selection order based on last season's elimination order in The Guillotine Fantasy Football League.">
+  <meta name="theme-color" content="#dc2626">
+  <title>Draft Order - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .draft-page {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .draft-hero {
+      text-align: center;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .draft-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .draft-hero .season-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--color-gold), #d97706);
+      color: #1a1a24;
+      font-size: 1rem;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .draft-hero p {
+      color: var(--color-text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .draft-explanation {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .draft-explanation h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .draft-explanation p {
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+    }
+
+    .draft-order-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .draft-order-table th {
+      background: linear-gradient(180deg, #1f1f2e 0%, #15151f 100%);
+      color: var(--color-text);
+      font-weight: 600;
+      text-align: left;
+      padding: var(--spacing-md) var(--spacing-lg);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--color-accent-dark);
+    }
+
+    .draft-order-table th:first-child {
+      text-align: center;
+      width: 100px;
+    }
+
+    .draft-order-table td {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-bottom: 1px solid var(--color-border);
+      transition: all var(--transition-fast);
+    }
+
+    .draft-order-table tbody tr:hover {
+      background: var(--color-bg-elevated);
+    }
+
+    .draft-order-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pick-number {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+    }
+
+    .pick-number.top-3 {
+      color: var(--color-gold);
+    }
+
+    .pick-number.mid {
+      color: var(--color-text);
+    }
+
+    .pick-number.late {
+      color: var(--color-text-muted);
+    }
+
+    .manager-info {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .manager-name {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .chop-info {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .chop-week-badge {
+      display: inline-block;
+      background: var(--color-chop-week);
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .champion-row td {
+      background: rgba(251, 191, 36, 0.1);
+    }
+
+    .champion-row .manager-name::after {
+      content: 'CHAMP';
+      display: inline-block;
+      background: linear-gradient(135deg, var(--color-gold), #d97706);
+      color: #1a1a24;
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      font-weight: 700;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-text-secondary);
+    }
+
+    .error-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-accent-light);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .back-link:hover {
+      color: var(--color-accent-light);
+      background: var(--color-bg-card);
+    }
+
+    @media (max-width: 768px) {
+      .draft-hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .draft-order-table th,
+      .draft-order-table td {
+        padding: var(--spacing-sm) var(--spacing-md);
+      }
+
+      .pick-number {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container draft-page">
+    <a href="/" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Standings
+    </a>
+
+    <div class="draft-hero">
+      <span class="season-badge" id="season-badge">2026 Season</span>
+      <h1>Draft Selection Order</h1>
+      <p>Pick your draft position based on last season's elimination order</p>
+    </div>
+
+    <div class="draft-explanation">
+      <h2><span>&#x1F3AF;</span> How It Works</h2>
+      <p>
+        The team eliminated <strong>first</strong> in the previous season gets <strong>first choice</strong> of draft position.
+        The team eliminated second picks next, and so on. The <strong>champion picks last</strong>.
+        This gives eliminated teams a small advantage heading into the next season.
+      </p>
+    </div>
+
+    <div id="draft-order-container">
+      <div class="loading-state">
+        <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+        <p>Loading draft order...</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Home
+        </a>
+        <a href="/rules" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          League Rules
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"/>
+            <path d="M18 20V4"/>
+            <path d="M6 20v-4"/>
+          </svg>
+          Historical Stats
+        </a>
+        <a href="/transactions" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Transactions
+        </a>
+        <a href="/death-bell" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M3 21h18M7 13v8M17 13v8M12 13v8"/>
+          </svg>
+          Death Bell
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Manager Profiles
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { fetchSeasonData, fetchAvailableSeasons } from '/js/api.js';
+
+    async function loadDraftOrder() {
+      const container = document.getElementById('draft-order-container');
+      const seasonBadge = document.getElementById('season-badge');
+
+      try {
+        // Get available seasons and use the most recent one
+        const seasonsInfo = await fetchAvailableSeasons();
+        const lastSeason = Math.max(...seasonsInfo.seasons);
+        const nextSeason = lastSeason + 1;
+
+        seasonBadge.textContent = `${nextSeason} Season`;
+
+        // Load last season's data
+        const data = await fetchSeasonData(lastSeason, 17);
+
+        if (!data || !data.managers) {
+          throw new Error('No data available');
+        }
+
+        // Sort managers by chop_week (first eliminated = pick 1)
+        // Champion (chop_week = null) picks last
+        const sortedManagers = [...data.managers].sort((a, b) => {
+          if (a.chop_week === null && b.chop_week === null) return 0;
+          if (a.chop_week === null) return 1;
+          if (b.chop_week === null) return -1;
+          return a.chop_week - b.chop_week;
+        });
+
+        // Build table
+        let html = `
+          <table class="draft-order-table">
+            <thead>
+              <tr>
+                <th>Pick #</th>
+                <th>Manager</th>
+                <th>Based On</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        sortedManagers.forEach((manager, index) => {
+          const pickNum = index + 1;
+          const isChampion = manager.chop_week === null;
+          const rowClass = isChampion ? 'champion-row' : '';
+
+          let pickClass = 'late';
+          if (pickNum <= 3) pickClass = 'top-3';
+          else if (pickNum <= 10) pickClass = 'mid';
+
+          let chopInfo = '';
+          if (isChampion) {
+            chopInfo = `<span class="chop-info">Season Champion</span>`;
+          } else {
+            chopInfo = `<span class="chop-week-badge">Wk ${manager.chop_week}</span>`;
+          }
+
+          html += `
+            <tr class="${rowClass}">
+              <td class="pick-number ${pickClass}">${pickNum}</td>
+              <td>
+                <div class="manager-info">
+                  <span class="manager-name">${manager.user_name}</span>
+                </div>
+              </td>
+              <td>${chopInfo}</td>
+            </tr>
+          `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+      } catch (error) {
+        console.error('Error loading draft order:', error);
+        container.innerHTML = `
+          <div class="error-state">
+            <p>Unable to load draft order. Please try again later.</p>
+          </div>
+        `;
+      }
+    }
+
+    loadDraftOrder();
+  </script>
+</body>
+</html>

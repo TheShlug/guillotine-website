@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track all FAAB spending, waiver bids, and transactions in The Guillotine Fantasy Football League.">
+  <meta name="theme-color" content="#dc2626">
+  <title>Transactions - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .transactions-page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Uses shared .page-hero from main.css */
+    /* Uses shared .season-selector and .season-btn from main.css */
+    /* Uses shared .stats-grid and .stat-card from main.css */
+
+    .week-section {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-lg);
+      overflow: hidden;
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: linear-gradient(180deg, #1f1f2e 0%, #15151f 100%);
+      border-bottom: 2px solid var(--color-accent-dark);
+      cursor: pointer;
+    }
+
+    .week-header:hover {
+      background: linear-gradient(180deg, #252538 0%, #1a1a28 100%);
+    }
+
+    .week-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .week-stats {
+      display: flex;
+      gap: var(--spacing-lg);
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .week-stats span {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+
+    .week-stats .amount {
+      color: var(--color-gold);
+      font-weight: 600;
+    }
+
+    .week-content {
+      padding: var(--spacing-md);
+      display: none;
+    }
+
+    .week-content.expanded {
+      display: block;
+    }
+
+    .transaction-row {
+      display: grid;
+      grid-template-columns: 1fr 150px 100px 80px 100px;
+      align-items: center;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 1px solid var(--color-border);
+      font-size: 0.95rem;
+    }
+
+    .transaction-row:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-row:hover {
+      background: var(--color-bg-elevated);
+    }
+
+    .player-name {
+      font-weight: 600;
+    }
+
+    .manager-name {
+      color: var(--color-text-secondary);
+    }
+
+    .bid-amount {
+      color: var(--color-gold);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .bidders-count {
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    .wasted-amount {
+      text-align: right;
+      color: var(--color-accent-light);
+    }
+
+    .wasted-amount.zero {
+      color: var(--color-text-muted);
+    }
+
+    .transaction-header {
+      display: grid;
+      grid-template-columns: 1fr 150px 100px 80px 100px;
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .transaction-header span:nth-child(3),
+    .transaction-header span:nth-child(4),
+    .transaction-header span:nth-child(5) {
+      text-align: right;
+    }
+
+    .transaction-header span:nth-child(4) {
+      text-align: center;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .back-link:hover {
+      color: var(--color-accent-light);
+      background: var(--color-bg-card);
+    }
+
+    .loading-state, .error-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .page-hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .transaction-row, .transaction-header {
+        grid-template-columns: 1fr 100px 80px;
+      }
+
+      .transaction-header span:nth-child(4),
+      .transaction-header span:nth-child(5),
+      .transaction-row .bidders-count,
+      .transaction-row .wasted-amount {
+        display: none;
+      }
+
+      .week-stats {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container transactions-page">
+    <a href="/" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Standings
+    </a>
+
+    <div class="page-hero">
+      <h1>Waiver Transactions</h1>
+      <p>Track all FAAB spending, bids, and waiver activity</p>
+    </div>
+
+    <div class="season-selector" id="season-selector">
+      <!-- Populated by JS -->
+    </div>
+
+    <div id="stats-container">
+      <!-- Stats grid populated by JS -->
+    </div>
+
+    <div id="transactions-container">
+      <div class="loading-state">
+        <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+        <p>Loading transactions...</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Home
+        </a>
+        <a href="/rules" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          League Rules
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"/>
+            <path d="M18 20V4"/>
+            <path d="M6 20v-4"/>
+          </svg>
+          Historical Stats
+        </a>
+        <a href="/draft-order" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 3l7 7"/>
+          </svg>
+          Draft Order
+        </a>
+        <a href="/death-bell" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M3 21h18M7 13v8M17 13v8M12 13v8"/>
+          </svg>
+          Death Bell
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Manager Profiles
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { fetchAvailableSeasons } from '/js/api.js';
+
+    let currentSeason = null;
+
+    async function loadSeasons() {
+      const seasonsInfo = await fetchAvailableSeasons();
+      const selector = document.getElementById('season-selector');
+
+      // Show all seasons (both API and historical)
+      const allSeasons = seasonsInfo.seasons || [];
+
+      if (allSeasons.length === 0) {
+        selector.innerHTML = '<p>No seasons available</p>';
+        return;
+      }
+
+      allSeasons.forEach(season => {
+        const btn = document.createElement('button');
+        btn.className = 'season-btn';
+        btn.textContent = season;
+        btn.onclick = () => loadTransactions(season);
+        selector.appendChild(btn);
+      });
+
+      // Load most recent season
+      currentSeason = Math.max(...allSeasons);
+      loadTransactions(currentSeason);
+    }
+
+    async function loadTransactions(season) {
+      currentSeason = season;
+
+      // Update button states
+      document.querySelectorAll('.season-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent == season);
+      });
+
+      const container = document.getElementById('transactions-container');
+      const statsContainer = document.getElementById('stats-container');
+
+      container.innerHTML = `
+        <div class="loading-state">
+          <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+          <p>Loading transactions...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`/api/seasons/${season}/transactions`);
+        if (!response.ok) throw new Error('Failed to load transactions');
+        const data = await response.json();
+
+        // Check if data is available for this season
+        if (data.message || !data.transactions || data.transactions.length === 0) {
+          statsContainer.innerHTML = '';
+          container.innerHTML = `
+            <div class="loading-state" style="padding: var(--spacing-2xl);">
+              <p style="font-size: 1.1rem; margin-bottom: var(--spacing-md);">&#x1F6AB; Transaction Data Not Available</p>
+              <p style="color: var(--color-text-muted);">
+                Transaction data requires detailed waiver/FAAB data from Sleeper which is not available for this historical season.
+                This feature is only available for live seasons where we can track all waiver claims and bids.
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        // Calculate totals
+        const totalSpent = data.transactions.reduce((sum, t) => sum + t.winning_bid, 0);
+        const totalWasted = data.transactions.reduce((sum, t) => sum + t.wasted, 0);
+        const totalTransactions = data.transactions.length;
+
+        // Render stats
+        statsContainer.innerHTML = `
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">$${totalSpent.toLocaleString()}</div>
+              <div class="stat-label">Total FAAB Spent</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$${totalWasted.toLocaleString()}</div>
+              <div class="stat-label">Total FAAB Wasted</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${totalTransactions}</div>
+              <div class="stat-label">Total Transactions</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">$${totalTransactions > 0 ? Math.round(totalSpent / totalTransactions) : 0}</div>
+              <div class="stat-label">Avg Winning Bid</div>
+            </div>
+          </div>
+        `;
+
+        // Render weeks in reverse order (most recent first)
+        let html = '';
+        const weeks = Object.keys(data.weekly_summaries).map(Number).sort((a, b) => b - a);
+
+        weeks.forEach(week => {
+          const weekData = data.weekly_summaries[week];
+          if (weekData.num_transactions === 0) return;
+
+          html += `
+            <div class="week-section">
+              <div class="week-header" onclick="toggleWeek(${week})">
+                <span class="week-title">Week ${week}</span>
+                <div class="week-stats">
+                  <span><strong>${weekData.num_transactions}</strong> transactions</span>
+                  <span class="amount">$${weekData.total_spent} spent</span>
+                </div>
+              </div>
+              <div class="week-content" id="week-${week}">
+                <div class="transaction-header">
+                  <span>Player</span>
+                  <span>Manager</span>
+                  <span>Bid</span>
+                  <span>Bidders</span>
+                  <span>Wasted</span>
+                </div>
+                ${weekData.transactions.map(t => `
+                  <div class="transaction-row">
+                    <span class="player-name">${t.player_name}</span>
+                    <span class="manager-name">${t.manager}</span>
+                    <span class="bid-amount">$${t.winning_bid}</span>
+                    <span class="bidders-count">${t.num_bidders}</span>
+                    <span class="wasted-amount ${t.wasted === 0 ? 'zero' : ''}">$${t.wasted}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html || '<p style="text-align: center; color: var(--color-text-muted);">No transactions found</p>';
+
+      } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = `<div class="error-state">Failed to load transactions</div>`;
+      }
+    }
+
+    // Toggle week expansion
+    window.toggleWeek = function(week) {
+      const content = document.getElementById(`week-${week}`);
+      content.classList.toggle('expanded');
+    };
+
+    loadSeasons();
+  </script>
+</body>
+</html>

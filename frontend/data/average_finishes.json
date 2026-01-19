@@ -1,0 +1,166 @@
+{
+  "managers": [
+    {
+      "user_name": "skba91",
+      "finishes": {
+        "2023": null,
+        "2024": 4,
+        "2025": 2
+      },
+      "average_finish": 3.0
+    },
+    {
+      "user_name": "TheShlug",
+      "finishes": {
+        "2023": 1,
+        "2024": 1,
+        "2025": 8
+      },
+      "average_finish": 3.33
+    },
+    {
+      "user_name": "HankMoney",
+      "finishes": {
+        "2023": 2,
+        "2024": 3,
+        "2025": 11
+      },
+      "average_finish": 5.33
+    },
+    {
+      "user_name": "CantGuardMike13",
+      "finishes": {
+        "2023": 9,
+        "2024": 2,
+        "2025": 7
+      },
+      "average_finish": 6.0
+    },
+    {
+      "user_name": "WhoDatJerome",
+      "finishes": {
+        "2023": 3,
+        "2024": 5,
+        "2025": 14
+      },
+      "average_finish": 7.33
+    },
+    {
+      "user_name": "patrickbillet",
+      "finishes": {
+        "2023": 7,
+        "2024": 7,
+        "2025": 10
+      },
+      "average_finish": 8.0
+    },
+    {
+      "user_name": "sionj",
+      "finishes": {
+        "2023": 6,
+        "2024": 13,
+        "2025": 6
+      },
+      "average_finish": 8.33
+    },
+    {
+      "user_name": "Dwightshrute34",
+      "finishes": {
+        "2023": null,
+        "2024": 16,
+        "2025": 1
+      },
+      "average_finish": 8.5
+    },
+    {
+      "user_name": "charlesrex",
+      "finishes": {
+        "2023": 17,
+        "2024": 6,
+        "2025": 4
+      },
+      "average_finish": 9.0
+    },
+    {
+      "user_name": "CarlPohlman",
+      "finishes": {
+        "2023": 5,
+        "2024": 15,
+        "2025": 9
+      },
+      "average_finish": 9.67
+    },
+    {
+      "user_name": "EricBrill",
+      "finishes": {
+        "2023": 16,
+        "2024": 12,
+        "2025": 3
+      },
+      "average_finish": 10.33
+    },
+    {
+      "user_name": "davidstekla",
+      "finishes": {
+        "2023": 11,
+        "2024": 9,
+        "2025": 13
+      },
+      "average_finish": 11.0
+    },
+    {
+      "user_name": "colemeister94",
+      "finishes": {
+        "2023": null,
+        "2024": 11,
+        "2025": 12
+      },
+      "average_finish": 11.5
+    },
+    {
+      "user_name": "kcorr120",
+      "finishes": {
+        "2023": 14,
+        "2024": 17,
+        "2025": 5
+      },
+      "average_finish": 12.0
+    },
+    {
+      "user_name": "timurdikec",
+      "finishes": {
+        "2023": null,
+        "2024": 10,
+        "2025": 15
+      },
+      "average_finish": 12.5
+    },
+    {
+      "user_name": "0Milk0",
+      "finishes": {
+        "2023": null,
+        "2024": 8,
+        "2025": 18
+      },
+      "average_finish": 13.0
+    },
+    {
+      "user_name": "alfonsog",
+      "finishes": {
+        "2023": 10,
+        "2024": 14,
+        "2025": 17
+      },
+      "average_finish": 13.67
+    },
+    {
+      "user_name": "JFaz14",
+      "finishes": {
+        "2023": 8,
+        "2024": 18,
+        "2025": 16
+      },
+      "average_finish": 14.0
+    }
+  ]
+}

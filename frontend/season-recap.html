@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Season recap with weekly eliminations, highlights, and records from The Guillotine Fantasy Football League.">
+  <meta name="theme-color" content="#dc2626">
+  <title>Season Recap - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .recap-page {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .page-hero {
+      text-align: center;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .page-hero p {
+      color: var(--color-text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .season-selector {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .season-btn {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      background: transparent;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .season-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent-light);
+    }
+
+    .season-btn.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: white;
+    }
+
+    .champion-banner {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+      border: 2px solid var(--color-gold);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .champion-banner .trophy {
+      font-size: 4rem;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .champion-banner h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--color-gold);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .champion-banner p {
+      color: var(--color-text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .section {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: var(--spacing-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 2px solid var(--color-accent-dark);
+    }
+
+    .superlatives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--spacing-md);
+    }
+
+    .superlative-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .superlative-card .award {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .superlative-card .title {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .superlative-card .winner {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .superlative-card .value {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      margin-top: var(--spacing-xs);
+    }
+
+    .elimination-timeline {
+      position: relative;
+      padding-left: var(--spacing-xl);
+    }
+
+    .elimination-timeline::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--color-accent), var(--color-gold));
+    }
+
+    .elimination-item {
+      position: relative;
+      padding: var(--spacing-md) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .elimination-item::before {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--spacing-xl) + 6px);
+      width: 14px;
+      height: 14px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      border: 2px solid var(--color-bg-card);
+    }
+
+    .elimination-item:last-child::before {
+      background: var(--color-gold);
+    }
+
+    .elimination-week {
+      background: var(--color-chop-week);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .elimination-manager {
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .elimination-manager a {
+      color: var(--color-text);
+      text-decoration: none;
+    }
+
+    .elimination-manager a:hover {
+      color: var(--color-accent-light);
+    }
+
+    .elimination-score {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+    }
+
+    .close-calls-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .close-call-item {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+
+    .close-call-margin {
+      background: linear-gradient(135deg, #dc2626, #7f1d1d);
+      color: white;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .close-call-details {
+      flex: 1;
+    }
+
+    .close-call-survivor {
+      font-weight: 600;
+      color: #4ade80;
+    }
+
+    .close-call-chopped {
+      font-weight: 600;
+      color: var(--color-accent-light);
+    }
+
+    .close-call-context {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .back-link:hover {
+      color: var(--color-accent-light);
+      background: var(--color-bg-card);
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-text-secondary);
+    }
+
+    .in-progress-banner {
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(127, 29, 29, 0.1) 100%);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .in-progress-banner h2 {
+      color: var(--color-accent-light);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    @media (max-width: 768px) {
+      .page-hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .superlatives-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .close-call-item {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container recap-page">
+    <a href="/" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Standings
+    </a>
+
+    <div class="page-hero">
+      <h1>&#x1F3C6; Season Recap</h1>
+      <p>Relive the highlights, heartbreaks, and glory</p>
+    </div>
+
+    <div class="season-selector" id="season-selector">
+      <!-- Populated by JS -->
+    </div>
+
+    <div id="recap-container">
+      <div class="loading-state">
+        <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+        <p>Loading season recap...</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Home
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"/>
+            <path d="M18 20V4"/>
+            <path d="M6 20v-4"/>
+          </svg>
+          Historical Stats
+        </a>
+        <a href="/rules" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          League Rules
+        </a>
+        <a href="/draft-order" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 3l7 7"/>
+          </svg>
+          Draft Order
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Manager Profiles
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { fetchAvailableSeasons } from '/js/api.js';
+
+    let currentSeason = null;
+
+    async function loadSeasons() {
+      const seasonsInfo = await fetchAvailableSeasons();
+      const selector = document.getElementById('season-selector');
+
+      const seasons = seasonsInfo.seasons.sort((a, b) => b - a);
+
+      seasons.forEach(season => {
+        const btn = document.createElement('button');
+        btn.className = 'season-btn';
+        btn.textContent = season;
+        btn.onclick = () => loadRecap(season);
+        selector.appendChild(btn);
+      });
+
+      // Load most recent season
+      currentSeason = seasons[0];
+      loadRecap(currentSeason);
+    }
+
+    async function loadRecap(season) {
+      currentSeason = season;
+
+      // Update button states
+      document.querySelectorAll('.season-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent == season);
+      });
+
+      const container = document.getElementById('recap-container');
+      container.innerHTML = `
+        <div class="loading-state">
+          <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+          <p>Loading season recap...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`/api/seasons/${season}/recap`);
+        if (!response.ok) throw new Error('Failed to load recap');
+
+        const recap = await response.json();
+        renderRecap(recap, container);
+
+      } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<div class="loading-state"><p>Failed to load season recap</p></div>';
+      }
+    }
+
+    function renderRecap(recap, container) {
+      let html = '';
+
+      // Handle pre-season state
+      if (recap.current_week === 0 || recap.status === 'pre_draft' || recap.status === 'drafting') {
+        const statusText = recap.status === 'drafting' ? 'Draft in Progress' : 'Pre-Draft';
+        html = `
+          <div class="section" style="text-align: center; padding: var(--spacing-2xl);">
+            <div style="font-size: 4rem; margin-bottom: var(--spacing-lg); opacity: 0.6;">&#x1FA93;</div>
+            <h2 style="font-size: 1.5rem; margin-bottom: var(--spacing-sm);">Season ${recap.season} Has Not Started Yet</h2>
+            <p style="color: var(--color-text-muted); margin-bottom: var(--spacing-md);">
+              ${statusText === 'Draft in Progress' ? 'The draft is currently in progress.' : 'The season will begin once the draft is complete and Week 1 kicks off.'}
+            </p>
+            <p style="color: var(--color-text-secondary);">
+              Check back after Week 1 for elimination stats and superlatives!
+            </p>
+          </div>
+        `;
+        container.innerHTML = html;
+        return;
+      }
+
+      // Champion banner or in-progress banner
+      if (recap.is_complete && recap.champion) {
+        html += `
+          <div class="champion-banner">
+            <div class="trophy">&#x1F3C6;</div>
+            <h2>${recap.champion}</h2>
+            <p>${recap.season} Guillotine League Champion</p>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="in-progress-banner">
+            <h2>&#x1FA93; Season In Progress</h2>
+            <p>Week ${recap.current_week} of 17 - ${17 - recap.current_week} eliminations remaining</p>
+          </div>
+        `;
+      }
+
+      // Superlatives
+      const sups = recap.superlatives;
+      html += `
+        <div class="section">
+          <h2 class="section-title">&#x1F3C5; Season Superlatives</h2>
+          <div class="superlatives-grid">
+            ${sups.highest_score ? `
+              <div class="superlative-card">
+                <div class="award">&#x1F525;</div>
+                <div class="title">Highest Single Week</div>
+                <div class="winner">${sups.highest_score.manager}</div>
+                <div class="value">${sups.highest_score.score.toFixed(2)} pts (Week ${sups.highest_score.week})</div>
+              </div>
+            ` : ''}
+            ${sups.lowest_survivor_score ? `
+              <div class="superlative-card">
+                <div class="award">&#x1F340;</div>
+                <div class="title">Luckiest Survivor</div>
+                <div class="winner">${sups.lowest_survivor_score.manager}</div>
+                <div class="value">${sups.lowest_survivor_score.score.toFixed(2)} pts (Week ${sups.lowest_survivor_score.week})</div>
+              </div>
+            ` : ''}
+            ${sups.most_consistent ? `
+              <div class="superlative-card">
+                <div class="award">&#x1F4C8;</div>
+                <div class="title">Most Consistent</div>
+                <div class="winner">${sups.most_consistent.manager}</div>
+                <div class="value">Std Dev: ${sups.most_consistent.std_dev}</div>
+              </div>
+            ` : ''}
+            ${sups.most_volatile ? `
+              <div class="superlative-card">
+                <div class="award">&#x1F3A2;</div>
+                <div class="title">Boom or Bust</div>
+                <div class="winner">${sups.most_volatile.manager}</div>
+                <div class="value">Std Dev: ${sups.most_volatile.std_dev}</div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      // Close Calls
+      if (recap.close_calls && recap.close_calls.length > 0) {
+        html += `
+          <div class="section">
+            <h2 class="section-title">&#x1F62C; Closest Calls</h2>
+            <div class="close-calls-list">
+              ${recap.close_calls.map(cc => `
+                <div class="close-call-item">
+                  <div class="close-call-margin">${cc.margin.toFixed(2)}</div>
+                  <div class="close-call-details">
+                    <span class="close-call-survivor">${cc.survivor}</span> survived over
+                    <span class="close-call-chopped">${cc.chopped}</span>
+                    <div class="close-call-context">Week ${cc.week}: ${cc.survivor_score.toFixed(2)} vs ${cc.chopped_score.toFixed(2)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Biggest Blowouts
+      if (recap.biggest_blowouts && recap.biggest_blowouts.length > 0) {
+        html += `
+          <div class="section">
+            <h2 class="section-title">&#x1F4A5; Biggest Elimination Margins</h2>
+            <div class="close-calls-list">
+              ${recap.biggest_blowouts.map(bb => `
+                <div class="close-call-item">
+                  <div class="close-call-margin" style="background: linear-gradient(135deg, #7f1d1d, #450a0a);">${bb.margin_to_safety.toFixed(2)}</div>
+                  <div class="close-call-details">
+                    <span class="close-call-chopped">${bb.chopped}</span> was eliminated
+                    <div class="close-call-context">Week ${bb.week}: Scored ${bb.score.toFixed(2)} - ${bb.margin_to_safety.toFixed(2)} points behind safety</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Elimination Timeline
+      if (recap.elimination_order && recap.elimination_order.length > 0) {
+        html += `
+          <div class="section">
+            <h2 class="section-title">&#x1FA93; Elimination Timeline</h2>
+            <div class="elimination-timeline">
+              ${recap.elimination_order.map(elim => `
+                <div class="elimination-item">
+                  <span class="elimination-week">Week ${elim.week}</span>
+                  <span class="elimination-manager">
+                    <a href="/manager/${encodeURIComponent(elim.manager)}">${elim.manager}</a>
+                  </span>
+                  <span class="elimination-score">${elim.score ? elim.score.toFixed(2) + ' pts' : ''}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    loadSeasons();
+  </script>
+</body>
+</html>

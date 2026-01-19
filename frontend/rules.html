@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Official rules for The Guillotine Fantasy Football League - Learn how 18 teams compete in elimination style format.">
+  <meta name="theme-color" content="#dc2626">
+  <title>League Rules - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .rules-page {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .rules-section {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .rules-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 2px solid var(--color-accent);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .rules-section h2 .icon {
+      font-size: 1.75rem;
+    }
+
+    .rules-section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+    }
+
+    .rules-section p {
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .rules-section ul {
+      list-style: none;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .rules-section li {
+      color: var(--color-text-secondary);
+      padding: var(--spacing-sm) 0;
+      padding-left: var(--spacing-lg);
+      position: relative;
+      line-height: 1.7;
+    }
+
+    .rules-section li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 8px;
+      height: 8px;
+      background: var(--color-accent);
+      border-radius: 50%;
+    }
+
+    .rules-section strong {
+      color: var(--color-text);
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, var(--color-bg-elevated) 0%, rgba(220, 38, 38, 0.1) 100%);
+      border: 1px solid var(--color-accent-dark);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+    }
+
+    .highlight-box p {
+      margin: 0;
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    .highlight-box .warning-icon {
+      font-size: 1.5rem;
+      margin-right: var(--spacing-sm);
+    }
+
+    .payout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+    }
+
+    .payout-item {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .payout-item .place {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .payout-item .amount {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .payout-item.gold .amount { color: var(--color-gold); }
+    .payout-item.silver .amount { color: #c0c0c0; }
+    .payout-item.bronze .amount { color: #cd7f32; }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-md);
+      margin: var(--spacing-lg) 0;
+    }
+
+    .spec-item {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+    }
+
+    .spec-item .label {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .spec-item .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: var(--spacing-xl);
+      margin: var(--spacing-lg) 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--color-border);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: var(--spacing-lg);
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--spacing-xl) + 4px);
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      border: 2px solid var(--color-bg-card);
+    }
+
+    .timeline-item .week {
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .timeline-item .event {
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .rules-hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .payout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rules-section {
+        padding: var(--spacing-lg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container rules-page">
+    <a href="/" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Standings
+    </a>
+
+    <div class="page-hero">
+      <h1>&#x1FA93; Guillotine League Rules &#x1FA93;</h1>
+      <p>Survive or be eliminated. Only one team remains.</p>
+    </div>
+
+    <!-- Overview Section -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F3C8;</span> How It Works</h2>
+      <p>
+        The Guillotine League begins with <strong>18 teams</strong>. Each week, league results are determined by
+        the total points from each team's starting lineup. <strong>Head-to-head matchups do not matter.</strong>
+      </p>
+      <p>
+        After each week, the team that scored the <strong>fewest points</strong> that week is eliminated from the
+        competition. When a team is eliminated, its entire roster of players become free agents, eligible to be
+        acquired by the rest of the league.
+      </p>
+      <p>
+        One team is eliminated each week from <strong>weeks 1 - 17</strong> of the NFL season until one team remains
+        as the champion.
+      </p>
+    </section>
+
+    <!-- Payouts Section -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F3C6;</span> Payouts</h2>
+      <p><strong>Buy-in:</strong> $50 per team</p>
+      <div class="payout-grid">
+        <div class="payout-item gold">
+          <div class="place">First Place</div>
+          <div class="amount">$700</div>
+        </div>
+        <div class="payout-item silver">
+          <div class="place">Second Place</div>
+          <div class="amount">$150</div>
+        </div>
+        <div class="payout-item bronze">
+          <div class="place">Third Place</div>
+          <div class="amount">$50</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roster Section -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F465;</span> Roster Construction</h2>
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="label">Quarterback</div>
+          <div class="value">1 QB</div>
+        </div>
+        <div class="spec-item">
+          <div class="label">Running Backs</div>
+          <div class="value">2 RB</div>
+        </div>
+        <div class="spec-item">
+          <div class="label">Wide Receivers</div>
+          <div class="value">2 WR</div>
+        </div>
+        <div class="spec-item">
+          <div class="label">Tight End</div>
+          <div class="value">1 TE</div>
+        </div>
+        <div class="spec-item">
+          <div class="label">Flex (RB/WR/TE)</div>
+          <div class="value">2 FLEX</div>
+        </div>
+        <div class="spec-item">
+          <div class="label">Bench Spots</div>
+          <div class="value">4 (starts)</div>
+        </div>
+      </div>
+      <ul>
+        <li><strong>Total roster size:</strong> 12 players to start the season</li>
+        <li><strong>No IR slots</strong></li>
+        <li><strong>Bench expansion:</strong> Extra bench spot added after weeks 4 and 8</li>
+      </ul>
+    </section>
+
+    <!-- Draft Section -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F4DD;</span> Draft</h2>
+      <ul>
+        <li><strong>Format:</strong> Snake draft</li>
+        <li><strong>Rounds:</strong> 12 rounds</li>
+        <li><strong>Pick clock:</strong> 90 seconds to start (may decrease in later rounds)</li>
+      </ul>
+    </section>
+
+    <!-- Waivers Section -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F4B0;</span> Waivers & Free Agency</h2>
+      <ul>
+        <li><strong>FAAB Budget:</strong> $1,000 per team</li>
+        <li><strong>Waiver processing:</strong> Wednesdays at 8:00 PM EST</li>
+        <li><strong>Minimum bid:</strong> $0</li>
+        <li><strong>After waivers clear:</strong> Remaining free agents available on first-come-first-serve (FCFS) basis</li>
+        <li><strong>Preseason waivers:</strong> One blind bidding period on the Wednesday before the NFL season opener</li>
+      </ul>
+
+      <div class="highlight-box">
+        <p><span class="warning-icon">&#x26A0;</span> <strong>Important Week 14+ Rule:</strong> Players on teams that are chopped from weeks 14 onward will <strong>NOT</strong> be available in free agency. The last actual "chop" releasing players will be from the team eliminated in week 13. Waivers with available players will continue to run through the end of the season (week 17).</p>
+      </div>
+    </section>
+
+    <!-- Trading Section -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F6AB;</span> Trading</h2>
+      <p><strong>Trading players is NOT allowed.</strong></p>
+      <p>All roster building must be done through the draft and waiver wire. This ensures fair competition and prevents collusion.</p>
+    </section>
+
+    <!-- Season Timeline -->
+    <section class="rules-section">
+      <h2><span class="icon">&#x1F4C5;</span> Season Timeline</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="week">Preseason</div>
+          <div class="event">Draft and initial blind bidding waiver period</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">Weeks 1-4</div>
+          <div class="event">4 teams eliminated (4 bench spots)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">After Week 4</div>
+          <div class="event">+1 bench spot added (5 total)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">Weeks 5-8</div>
+          <div class="event">4 more teams eliminated</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">After Week 8</div>
+          <div class="event">+1 bench spot added (6 total)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">Weeks 9-13</div>
+          <div class="event">5 more teams eliminated (last "chop" releasing players)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">Weeks 14-17</div>
+          <div class="event">Final 4 eliminations (chopped players NOT available)</div>
+        </div>
+        <div class="timeline-item">
+          <div class="week">End of Week 17</div>
+          <div class="event">&#x1F3C6; Champion crowned!</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Home
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"/>
+            <path d="M18 20V4"/>
+            <path d="M6 20v-4"/>
+          </svg>
+          Historical Stats
+        </a>
+        <a href="/draft-order" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 3l7 7"/>
+          </svg>
+          Draft Order
+        </a>
+        <a href="/transactions" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Transactions
+        </a>
+        <a href="/death-bell" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M3 21h18M7 13v8M17 13v8M12 13v8"/>
+          </svg>
+          Death Bell
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Manager Profiles
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

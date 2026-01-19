@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#dc2626">
+  <title>Page Not Found - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .error-page {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--spacing-xl);
+    }
+
+    .error-icon {
+      font-size: 6rem;
+      margin-bottom: var(--spacing-lg);
+      opacity: 0.6;
+    }
+
+    .error-code {
+      font-size: clamp(4rem, 15vw, 8rem);
+      font-weight: 800;
+      color: var(--color-accent);
+      line-height: 1;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .error-message {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .error-description {
+      color: var(--color-text-muted);
+      margin-bottom: var(--spacing-xl);
+      max-width: 400px;
+    }
+
+    .home-button {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md) var(--spacing-xl);
+      background: var(--color-accent);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+    }
+
+    .home-button:hover {
+      background: var(--color-accent-light);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .home-button svg {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="error-page">
+      <div class="error-icon">&#x1FA93;</div>
+      <div class="error-code">404</div>
+      <h1 class="error-message">Page Got Chopped</h1>
+      <p class="error-description">
+        Looks like this page didn't survive the elimination. It might have been moved or never existed.
+      </p>
+      <a href="/" class="home-button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Back to Standings
+      </a>
+    </div>
+  </div>
+</body>
+</html>

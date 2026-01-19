@@ -1,0 +1,445 @@
+/* Guillotine Table Styles - Dark Theme */
+
+.guillotine-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+/* Header */
+.guillotine-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.guillotine-table th {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-align: center;
+  padding: 10px 6px;
+  white-space: nowrap;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.guillotine-table th:first-child {
+  border-top-left-radius: var(--radius-md);
+}
+
+.guillotine-table th:last-child {
+  border-top-right-radius: var(--radius-md);
+}
+
+/* Column widths */
+.col-draft { width: 55px; min-width: 55px; }
+.col-avg { width: 65px; min-width: 65px; }
+.col-faab { width: 70px; min-width: 70px; }
+.col-faab-wasted { width: 70px; min-width: 70px; }
+.col-close-calls { width: 55px; min-width: 55px; }
+.col-chop { width: 55px; min-width: 55px; }
+.col-manager { width: 150px; min-width: 150px; text-align: left !important; }
+.col-week { width: 60px; min-width: 60px; }
+
+/* Cells */
+.guillotine-table td {
+  text-align: center;
+  padding: 8px 5px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-fast);
+  font-variant-numeric: tabular-nums;
+}
+
+.guillotine-table tbody tr {
+  transition: filter var(--transition-fast);
+}
+
+.guillotine-table tbody tr:hover:not(.summary-row) td {
+  filter: brightness(1.08);
+}
+
+/* Manager name column */
+.guillotine-table td.manager-cell {
+  text-align: left;
+  font-weight: 600;
+  padding-left: var(--spacing-md);
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  position: relative;
+}
+
+/* Manager name links */
+.guillotine-table .manager-link {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.guillotine-table .manager-link:hover {
+  color: var(--color-accent-light);
+}
+
+/* NA / Future cells */
+.guillotine-table td.na-cell {
+  background-color: var(--color-na-cell) !important;
+  color: transparent !important;
+}
+
+/* Chop week cell - the score in the elimination week */
+.guillotine-table td.chop-cell {
+  background-color: var(--color-chop-week) !important;
+  color: white !important;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Eliminated row styling */
+.guillotine-table tr.eliminated td.manager-cell {
+  opacity: 0.7;
+}
+
+/* Summary rows */
+.guillotine-table tr.summary-row td {
+  font-weight: 600;
+  border-bottom: none;
+  color: #1a1a24;
+}
+
+.guillotine-table tr.summary-row-first td {
+  border-top: 3px solid var(--color-accent);
+}
+
+.guillotine-table tr.summary-high td:not(.na-cell) { background-color: var(--color-high-score); color: #1a1a24; }
+.guillotine-table tr.summary-75th td:not(.na-cell) { background-color: var(--color-75th); color: #1a1a24; }
+.guillotine-table tr.summary-median td:not(.na-cell) { background-color: var(--color-median); color: #1a1a24; }
+.guillotine-table tr.summary-25th td:not(.na-cell) { background-color: var(--color-25th); color: #1a1a24; }
+.guillotine-table tr.summary-chop td:not(.na-cell) { background-color: var(--color-chop); color: white; }
+.guillotine-table tr.summary-diff td:not(.na-cell) { background-color: var(--color-chop-delta); color: #1a1a24; }
+
+/* Summary row manager/label cells - ensure visibility */
+.guillotine-table tr.summary-row td.manager-cell {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: inherit;
+  background: inherit !important;
+}
+
+/* Summary row FAAB cells should match row color */
+.guillotine-table tr.summary-row td.faab-cell {
+  background-color: inherit !important;
+}
+
+/* Vertical dividers after weeks 4 and 8 */
+.guillotine-table th.week-divider,
+.guillotine-table td.week-divider {
+  border-right: 3px solid var(--color-accent) !important;
+}
+
+/* Last row border radius */
+.guillotine-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.guillotine-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* Base badge styles */
+.badge {
+  display: inline-block;
+  font-size: 8px;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  margin-left: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  line-height: 1.2;
+}
+
+/* Survivor indicator */
+.survivor-badge {
+  background: linear-gradient(135deg, var(--color-score-high), #15803d);
+  color: white;
+}
+
+/* Champion indicator */
+.champion-badge {
+  background: linear-gradient(135deg, var(--color-gold), #d97706);
+  color: #1a1a24;
+  box-shadow: var(--shadow-gold-glow);
+}
+
+/* Rank badges for 2nd and 3rd place */
+.rank-badge.second {
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+  color: #1a1a24;
+}
+
+.rank-badge.third {
+  background: linear-gradient(135deg, #cd7f32, #a16207);
+  color: white;
+}
+
+/* Recently chopped team - CHOP animation */
+.chopped-badge {
+  background: linear-gradient(135deg, #991b1b, #dc2626);
+  color: white;
+  animation: chop-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+}
+
+@keyframes chop-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(220, 38, 38, 0.8);
+    transform: scale(1.03);
+  }
+}
+
+.guillotine-table tr.recently-chopped {
+  animation: row-highlight 3s ease-out;
+}
+
+@keyframes row-highlight {
+  0% {
+    background: rgba(220, 38, 38, 0.2);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* Export styling - make table look cleaner in PNG */
+.export-mode .table-container {
+  background: #1a1a24;
+  padding: 20px;
+}
+
+.export-mode .guillotine-table {
+  font-size: 15px;
+}
+
+.export-mode .guillotine-table th,
+.export-mode .guillotine-table td {
+  padding: 10px 8px;
+}
+
+.export-mode .season-info {
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+/* Season info banner */
+.season-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(90deg, var(--color-accent-dark), var(--color-accent));
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+}
+
+.season-info-left {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.season-info-right {
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Budget stats above table */
+.budget-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md) var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.budget-stats-label {
+  flex-basis: 100%;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-xs);
+}
+
+.budget-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.budget-stat .stat-label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 12px;
+}
+
+.budget-stat .stat-values {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Export styling for budget stats */
+.export-mode .budget-stats {
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+/* Pre-season message */
+.pre-season-message {
+  text-align: center;
+}
+
+.pre-season-content {
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.pre-season-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.6;
+}
+
+.pre-season-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
+}
+
+.pre-season-content p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+.pre-season-content .manager-count {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.pre-season-content .manager-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-md);
+}
+
+.pre-season-content .manager-chip {
+  background: var(--color-bg-elevated);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+/* Alternating row colors for better readability */
+.guillotine-table tbody tr:nth-child(odd):not(.summary-row) td:not(.na-cell):not(.chop-cell) {
+  /* Slight overlay for alternating rows */
+}
+
+/* FAAB wasted column styling */
+.guillotine-table td.faab-wasted-cell {
+  color: var(--color-accent-light);
+  font-weight: 500;
+}
+
+.guillotine-table td.faab-wasted-cell.zero {
+  color: var(--color-text-muted);
+}
+
+/* Close calls column styling */
+.guillotine-table td.col-close-calls {
+  font-weight: 600;
+}
+
+.guillotine-table td.col-close-calls.warning {
+  color: var(--color-gold);
+}
+
+.guillotine-table td.col-close-calls.danger {
+  color: var(--color-accent-light);
+  font-weight: 700;
+}
+
+/* Score cells - ensure good contrast */
+.guillotine-table td.score-cell {
+  font-weight: 500;
+}
+
+/* Responsive table */
+@media (max-width: 1200px) {
+  .guillotine-table {
+    font-size: 12px;
+  }
+
+  .guillotine-table th,
+  .guillotine-table td {
+    padding: 6px 4px;
+  }
+
+  .col-manager {
+    width: 120px;
+    min-width: 120px;
+  }
+
+  .col-week {
+    width: 50px;
+    min-width: 50px;
+  }
+
+  .champion-badge,
+  .survivor-badge,
+  .rank-badge {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 768px) {
+  .guillotine-table {
+    font-size: 11px;
+  }
+
+  .col-manager {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .col-week {
+    width: 45px;
+    min-width: 45px;
+  }
+}

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Historical performance statistics across all seasons of The Guillotine Fantasy Football League.">
+  <meta name="theme-color" content="#dc2626">
+  <title>Historical Stats - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .stats-page {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .page-hero {
+      text-align: center;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .page-hero p {
+      color: var(--color-text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .finishes-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .finishes-table th {
+      background: linear-gradient(180deg, #1f1f2e 0%, #15151f 100%);
+      color: var(--color-text);
+      font-weight: 600;
+      text-align: center;
+      padding: var(--spacing-md) var(--spacing-lg);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--color-accent-dark);
+    }
+
+    .finishes-table th:first-child {
+      text-align: left;
+    }
+
+    .finishes-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: all var(--transition-fast);
+    }
+
+    .finishes-table th.sortable:hover {
+      color: var(--color-accent-light);
+    }
+
+    .finishes-table th.sorted-asc::after {
+      content: ' ▲';
+      font-size: 10px;
+    }
+
+    .finishes-table th.sorted-desc::after {
+      content: ' ▼';
+      font-size: 10px;
+    }
+
+    .finishes-table td {
+      padding: var(--spacing-md) var(--spacing-lg);
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+      transition: all var(--transition-fast);
+    }
+
+    .finishes-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .finishes-table tbody tr:hover {
+      background: var(--color-bg-elevated);
+    }
+
+    .finishes-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .manager-name {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .manager-name a {
+      color: var(--color-text);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .manager-name a:hover {
+      color: var(--color-accent-light);
+    }
+
+    .finish-1 {
+      color: var(--color-gold) !important;
+      font-weight: 700;
+    }
+    .finish-2 {
+      color: #c0c0c0 !important;
+      font-weight: 600;
+    }
+    .finish-3 {
+      color: #cd7f32 !important;
+      font-weight: 600;
+    }
+    .finish-na {
+      color: var(--color-text-muted) !important;
+    }
+
+    .avg-finish {
+      font-weight: 700;
+    }
+
+    .avg-finish.top-3 {
+      color: var(--color-gold);
+    }
+
+    .avg-finish.good {
+      color: #4ade80;
+    }
+
+    .avg-finish.mid {
+      color: var(--color-text);
+    }
+
+    .avg-finish.poor {
+      color: var(--color-accent-light);
+    }
+
+    .seasons-played {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .back-link:hover {
+      color: var(--color-accent-light);
+      background: var(--color-bg-card);
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-text-secondary);
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.gold { background: var(--color-gold); }
+    .legend-dot.silver { background: #c0c0c0; }
+    .legend-dot.bronze { background: #cd7f32; }
+
+    @media (max-width: 768px) {
+      .page-hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .finishes-table th,
+      .finishes-table td {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.9rem;
+      }
+
+      .legend {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container stats-page">
+    <a href="/" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Standings
+    </a>
+
+    <div class="page-hero">
+      <h1>&#x1F4CA; Historical Stats</h1>
+      <p>Performance across all seasons - Lower average = better</p>
+    </div>
+
+    <div id="table-container">
+      <div class="loading-state">
+        <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+        <p>Loading historical data...</p>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-dot gold"></span>
+        <span>1st Place</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot silver"></span>
+        <span>2nd Place</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot bronze"></span>
+        <span>3rd Place</span>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Home
+        </a>
+        <a href="/rules" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          League Rules
+        </a>
+        <a href="/draft-order" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 3l7 7"/>
+          </svg>
+          Draft Order
+        </a>
+        <a href="/transactions" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Transactions
+        </a>
+        <a href="/death-bell" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M3 21h18M7 13v8M17 13v8M12 13v8"/>
+          </svg>
+          Death Bell
+        </a>
+        <a href="/season-recap" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Season Recap
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { fetchAvailableSeasons } from '/js/api.js';
+
+    let currentSort = { column: 'average', direction: 'asc' };
+    let tableData = null;
+    let seasons = [];
+
+    async function init() {
+      const container = document.getElementById('table-container');
+
+      try {
+        // Get available seasons dynamically
+        const seasonsInfo = await fetchAvailableSeasons();
+        seasons = seasonsInfo.seasons.sort((a, b) => a - b);
+
+        const response = await fetch('/api/average-finishes');
+        tableData = await response.json();
+
+        renderTable(tableData, container);
+      } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = `
+          <div class="loading-state">
+            <p>Failed to load historical data.</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderTable(data, container) {
+      const table = document.createElement('table');
+      table.className = 'finishes-table';
+
+      // Build header dynamically based on available seasons
+      let headerHtml = `
+        <thead>
+          <tr>
+            <th>Manager</th>
+      `;
+
+      seasons.forEach(season => {
+        headerHtml += `<th class="sortable" data-sort="${season}">${season}</th>`;
+      });
+
+      headerHtml += `
+            <th class="sortable sorted-asc" data-sort="average">Avg Finish</th>
+            <th class="sortable" data-sort="played">Seasons</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      table.innerHTML = headerHtml;
+      const tbody = table.querySelector('tbody');
+
+      // Sort data
+      const sortedData = sortData(data.managers);
+
+      sortedData.forEach(manager => {
+        const row = document.createElement('tr');
+
+        // Manager name with link to profile
+        const nameCell = document.createElement('td');
+        nameCell.innerHTML = `
+          <div class="manager-name">
+            <a href="/manager/${encodeURIComponent(manager.user_name)}">${manager.user_name}</a>
+          </div>
+        `;
+        row.appendChild(nameCell);
+
+        // Season finishes - dynamically based on available seasons
+        let seasonsPlayed = 0;
+        seasons.forEach(season => {
+          const cell = document.createElement('td');
+          const finish = manager.finishes[String(season)];
+
+          if (finish === null || finish === undefined) {
+            cell.textContent = '-';
+            cell.className = 'finish-na';
+          } else {
+            cell.textContent = finish;
+            seasonsPlayed++;
+            if (finish === 1) cell.className = 'finish-1';
+            else if (finish === 2) cell.className = 'finish-2';
+            else if (finish === 3) cell.className = 'finish-3';
+          }
+
+          row.appendChild(cell);
+        });
+
+        // Average finish
+        const avgCell = document.createElement('td');
+        const avg = manager.average_finish;
+        if (avg) {
+          avgCell.textContent = avg.toFixed(2);
+          avgCell.className = 'avg-finish';
+          if (avg <= 5) avgCell.classList.add('top-3');
+          else if (avg <= 8) avgCell.classList.add('good');
+          else if (avg <= 12) avgCell.classList.add('mid');
+          else avgCell.classList.add('poor');
+        } else {
+          avgCell.textContent = '-';
+          avgCell.className = 'finish-na';
+        }
+        row.appendChild(avgCell);
+
+        // Seasons played
+        const playedCell = document.createElement('td');
+        playedCell.className = 'seasons-played';
+        playedCell.textContent = seasonsPlayed;
+        row.appendChild(playedCell);
+
+        tbody.appendChild(row);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(table);
+
+      // Add click handlers for sorting
+      table.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => handleSort(th.dataset.sort));
+      });
+    }
+
+    function sortData(managers) {
+      return [...managers].sort((a, b) => {
+        let aVal, bVal;
+
+        if (currentSort.column === 'average') {
+          aVal = a.average_finish || 999;
+          bVal = b.average_finish || 999;
+        } else if (currentSort.column === 'played') {
+          aVal = Object.values(a.finishes).filter(f => f !== null).length;
+          bVal = Object.values(b.finishes).filter(f => f !== null).length;
+        } else {
+          // Season column
+          aVal = a.finishes[currentSort.column] || 999;
+          bVal = b.finishes[currentSort.column] || 999;
+        }
+
+        if (currentSort.direction === 'asc') {
+          return aVal - bVal;
+        } else {
+          return bVal - aVal;
+        }
+      });
+    }
+
+    function handleSort(column) {
+      if (currentSort.column === column) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.column = column;
+        currentSort.direction = 'asc';
+      }
+
+      // Update header classes
+      document.querySelectorAll('th.sortable').forEach(th => {
+        th.classList.remove('sorted-asc', 'sorted-desc');
+        if (th.dataset.sort === column) {
+          th.classList.add(currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+        }
+      });
+
+      renderTable(tableData, document.getElementById('table-container'));
+    }
+
+    init();
+  </script>
+</body>
+</html>
