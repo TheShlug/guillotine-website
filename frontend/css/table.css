@@ -482,12 +482,20 @@
   .guillotine-table tr.summary-chop td.manager-cell { background: var(--color-chop); }
   .guillotine-table tr.summary-diff td.manager-cell { background: var(--color-chop-delta); }
 
-  /* Hide less important columns on mobile */
+  /* Hide less important columns on mobile - including in summary rows */
   .col-draft,
   .col-avg,
   .col-faab-wasted,
-  .col-close-calls {
-    display: none;
+  .col-close-calls,
+  .guillotine-table td.col-draft,
+  .guillotine-table td.col-avg,
+  .guillotine-table td.col-faab-wasted,
+  .guillotine-table td.col-close-calls,
+  .guillotine-table th.col-draft,
+  .guillotine-table th.col-avg,
+  .guillotine-table th.col-faab-wasted,
+  .guillotine-table th.col-close-calls {
+    display: none !important;
   }
 
   /* Compact the remaining columns */
