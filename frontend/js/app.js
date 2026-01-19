@@ -22,6 +22,7 @@ let tableContainer;
 let tableSection;
 let loadingOverlay;
 let tableHeaderBar;
+let mobileViewToggle;
 
 /**
  * Initialize the application
@@ -35,6 +36,7 @@ async function init() {
   tableSection = document.getElementById('table-section');
   loadingOverlay = document.getElementById('loading');
   tableHeaderBar = document.getElementById('table-header-bar');
+  mobileViewToggle = document.getElementById('mobile-view-toggle');
 
   // Show loading state
   setLoading(true);
@@ -144,6 +146,29 @@ function setupEventListeners() {
     state.week = parseInt(e.target.value);
     await loadSeasonData();
   });
+
+  // Mobile view toggle
+  if (mobileViewToggle) {
+    mobileViewToggle.addEventListener('click', (e) => {
+      if (e.target.classList.contains('toggle-btn')) {
+        const view = e.target.dataset.view;
+
+        // Update active button state
+        mobileViewToggle.querySelectorAll('.toggle-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.view === view);
+        });
+
+        // Update body class for view mode
+        document.body.classList.remove('mobile-cards', 'mobile-compact');
+        if (view === 'compact') {
+          document.body.classList.add('mobile-compact');
+        } else if (view === 'cards') {
+          document.body.classList.add('mobile-cards');
+        }
+        // 'default' view doesn't need a class - uses default mobile styles
+      }
+    });
+  }
 
   // Export button with visual feedback
   exportButton.addEventListener('click', async () => {
