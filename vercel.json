@@ -28,11 +28,35 @@
       "dest": "/frontend/data/$1"
     },
     {
+      "src": "/rules",
+      "dest": "/frontend/rules.html"
+    },
+    {
       "src": "/average-finishes",
       "dest": "/frontend/average-finishes.html"
     },
     {
-      "src": "/(.*\\.html)?",
+      "src": "/draft-order",
+      "dest": "/frontend/draft-order.html"
+    },
+    {
+      "src": "/transactions",
+      "dest": "/frontend/transactions.html"
+    },
+    {
+      "src": "/death-bell",
+      "dest": "/frontend/death-bell.html"
+    },
+    {
+      "src": "/season-recap",
+      "dest": "/frontend/season-recap.html"
+    },
+    {
+      "src": "/manager",
+      "dest": "/frontend/manager.html"
+    },
+    {
+      "src": "/",
       "dest": "/frontend/index.html"
     }
   ]
