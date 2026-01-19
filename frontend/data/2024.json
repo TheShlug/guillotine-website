@@ -27,7 +27,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 0.0,
+      "avg_above_chop": 0,
       "finish_position": 18
     },
     {
@@ -54,7 +54,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 10.9,
+      "avg_above_chop": 3.5,
       "finish_position": 17
     },
     {
@@ -81,7 +81,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 23.3,
+      "avg_above_chop": 7,
       "finish_position": 16
     },
     {
@@ -108,7 +108,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 26.8,
+      "avg_above_chop": 5,
       "finish_position": 15
     },
     {
@@ -135,7 +135,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 21.0,
+      "avg_above_chop": 5.2,
       "finish_position": 14
     },
     {
@@ -162,7 +162,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 21.2,
+      "avg_above_chop": 5.3,
       "finish_position": 13
     },
     {
@@ -189,7 +189,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 31.1,
+      "avg_above_chop": 6.4,
       "finish_position": 12
     },
     {
@@ -216,7 +216,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 18.7,
+      "avg_above_chop": 4.5,
       "finish_position": 11
     },
     {
@@ -243,7 +243,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 31.8,
+      "avg_above_chop": 7.2,
       "finish_position": 10
     },
     {
@@ -270,7 +270,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 23.4,
+      "avg_above_chop": 5.8,
       "finish_position": 9
     },
     {
@@ -297,7 +297,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 32.7,
+      "avg_above_chop": 6,
       "finish_position": 8
     },
     {
@@ -324,7 +324,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 23.8,
+      "avg_above_chop": 4.5,
       "finish_position": 7
     },
     {
@@ -351,7 +351,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 35.7,
+      "avg_above_chop": 6.4,
       "finish_position": 6
     },
     {
@@ -378,7 +378,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 47.5,
+      "avg_above_chop": 8,
       "finish_position": 5
     },
     {
@@ -405,7 +405,7 @@
         "16": null,
         "17": null
       },
-      "avg_above_chop": 34.0,
+      "avg_above_chop": 6.2,
       "finish_position": 4
     },
     {
@@ -432,7 +432,7 @@
         "16": 106.04,
         "17": null
       },
-      "avg_above_chop": 31.3,
+      "avg_above_chop": 5.9,
       "finish_position": 3
     },
     {
@@ -459,7 +459,7 @@
         "16": 172.44,
         "17": 123.08
       },
-      "avg_above_chop": 24.3,
+      "avg_above_chop": 3.5,
       "finish_position": 2
     },
     {
@@ -486,7 +486,7 @@
         "16": 165.92,
         "17": 148.96
       },
-      "avg_above_chop": 34.6,
+      "avg_above_chop": 5.8,
       "finish_position": 1
     }
   ],

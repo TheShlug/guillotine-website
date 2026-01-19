@@ -84,25 +84,50 @@ def extract_2024_data(wb):
             stats[stat_name] = float(val) if val is not None else None
         weekly_stats[str(wk)] = stats
 
-    # Calculate avg_above_chop for each manager
+    # Calculate avg_above_chop (rank-based: positions above the chopped team)
     for manager in managers:
         chop_week = manager["chop_week"]
         end_week = chop_week if chop_week else 17
 
-        diffs = []
+        positions_above = []
         for wk in range(1, end_week + 1):
-            score = manager["weekly_scores"].get(str(wk))
-            chop = weekly_stats.get(str(wk), {}).get("chop_score")
-            if score is not None and chop is not None:
-                diffs.append(score - chop)
+            # Get all scores for teams alive in this week
+            week_scores = []
+            for m in managers:
+                m_chop = m["chop_week"]
+                # Team is alive if they haven't been chopped yet or get chopped this week
+                if m_chop is None or m_chop >= wk:
+                    score = m["weekly_scores"].get(str(wk))
+                    if score is not None:
+                        week_scores.append((m["user_name"], score))
 
-        manager["avg_above_chop"] = round(statistics.mean(diffs), 1) if diffs else 0
+            if not week_scores:
+                continue
 
-    # Sort: eliminated first (by chop_week), then survivors (by avg_above_chop ascending)
+            # Sort by score descending (rank 1 = highest)
+            week_scores.sort(key=lambda x: x[1], reverse=True)
+            n = len(week_scores)
+
+            # Find this manager's rank
+            rank = None
+            for i, (name, score) in enumerate(week_scores):
+                if name == manager["user_name"]:
+                    rank = i + 1  # 1-indexed
+                    break
+
+            if rank is not None:
+                # Positions above chop = teams_alive - rank
+                # E.g., rank 1 of 18 = 17 positions above chop
+                # rank 18 of 18 = 0 positions above chop (you got chopped)
+                positions_above.append(n - rank)
+
+        manager["avg_above_chop"] = round(statistics.mean(positions_above), 1) if positions_above else 0
+
+    # Sort: eliminated first (by chop_week), then survivors (by avg_above_chop descending - higher is better)
     managers.sort(key=lambda m: (
         0 if m["chop_week"] else 1,
         m["chop_week"] or 999,
-        m["avg_above_chop"]
+        -m["avg_above_chop"]  # Negative because higher is better
     ))
 
     return {
@@ -171,25 +196,50 @@ def extract_2023_data(wb):
             stats[stat_name] = float(val) if val is not None else None
         weekly_stats[str(wk)] = stats
 
-    # Calculate avg_above_chop for each manager
+    # Calculate avg_above_chop (rank-based: positions above the chopped team)
     for manager in managers:
         chop_week = manager["chop_week"]
         end_week = chop_week if chop_week else 17
 
-        diffs = []
+        positions_above = []
         for wk in range(1, end_week + 1):
-            score = manager["weekly_scores"].get(str(wk))
-            chop = weekly_stats.get(str(wk), {}).get("chop_score")
-            if score is not None and chop is not None:
-                diffs.append(score - chop)
+            # Get all scores for teams alive in this week
+            week_scores = []
+            for m in managers:
+                m_chop = m["chop_week"]
+                # Team is alive if they haven't been chopped yet or get chopped this week
+                if m_chop is None or m_chop >= wk:
+                    score = m["weekly_scores"].get(str(wk))
+                    if score is not None:
+                        week_scores.append((m["user_name"], score))
 
-        manager["avg_above_chop"] = round(statistics.mean(diffs), 1) if diffs else 0
+            if not week_scores:
+                continue
 
-    # Sort: eliminated first (by chop_week), then survivors (by avg_above_chop ascending)
+            # Sort by score descending (rank 1 = highest)
+            week_scores.sort(key=lambda x: x[1], reverse=True)
+            n = len(week_scores)
+
+            # Find this manager's rank
+            rank = None
+            for i, (name, score) in enumerate(week_scores):
+                if name == manager["user_name"]:
+                    rank = i + 1  # 1-indexed
+                    break
+
+            if rank is not None:
+                # Positions above chop = teams_alive - rank
+                # E.g., rank 1 of 18 = 17 positions above chop
+                # rank 18 of 18 = 0 positions above chop (you got chopped)
+                positions_above.append(n - rank)
+
+        manager["avg_above_chop"] = round(statistics.mean(positions_above), 1) if positions_above else 0
+
+    # Sort: eliminated first (by chop_week), then survivors (by avg_above_chop descending - higher is better)
     managers.sort(key=lambda m: (
         0 if m["chop_week"] else 1,
         m["chop_week"] or 999,
-        m["avg_above_chop"]
+        -m["avg_above_chop"]  # Negative because higher is better
     ))
 
     return {
