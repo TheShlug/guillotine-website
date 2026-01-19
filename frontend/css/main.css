@@ -18,6 +18,11 @@
   --color-gold-light: #fcd34d;
   --color-gold-glow: rgba(251, 191, 36, 0.15);
 
+  /* Medal colors */
+  --color-silver: var(--color-silver);
+  --color-bronze: var(--color-bronze);
+  --color-text-dark: #1a1a24;
+
   /* Text colors - improved hierarchy */
   --color-text: #f8fafc;
   --color-text-secondary: #a1a1aa;
@@ -35,7 +40,7 @@
 
   /* Summary row colors */
   --color-high-score: #22c55e;
-  --color-75th: #4ade80;
+  --color-75th: var(--color-75th);
   --color-median: #e2e8f0;
   --color-25th: #fca5a5;
   --color-chop: #ef4444;
@@ -163,9 +168,10 @@ body {
     radial-gradient(ellipse 100% 60% at 50% 70%, rgba(220, 38, 38, 0.4) 0%, transparent 50%),
     radial-gradient(ellipse 80% 40% at 50% 80%, rgba(239, 68, 68, 0.3) 0%, transparent 40%),
     radial-gradient(ellipse 60% 30% at 50% 90%, rgba(251, 191, 36, 0.2) 0%, transparent 30%);
-  animation: fireGlow 2s ease-in-out infinite alternate;
+  animation: fireGlow 3s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
+  will-change: opacity, transform;
 }
 
 @keyframes fireGlow {
@@ -219,9 +225,10 @@ body {
     /* Drip 8 - medium */
     radial-gradient(ellipse 8px 45px at 90% 0%, #b91c1c 0%, #7f1d1d 40%, transparent 70%);
   opacity: 0.9;
-  animation: bloodDrip 4s ease-in-out infinite;
+  animation: bloodDrip 5s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
+  will-change: transform, opacity;
 }
 
 @keyframes bloodDrip {
@@ -256,10 +263,11 @@ body {
     /* Drip E */
     radial-gradient(ellipse 11px 55px at 85% 0%, #b91c1c 0%, transparent 70%);
   opacity: 0.7;
-  animation: bloodDrip2 4s ease-in-out infinite;
-  animation-delay: -2s;
+  animation: bloodDrip2 5s ease-in-out infinite;
+  animation-delay: -2.5s;
   pointer-events: none;
   z-index: 0;
+  will-change: transform, opacity;
 }
 
 @keyframes bloodDrip2 {
@@ -306,9 +314,10 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer 4s linear infinite;
+  animation: shimmer 5s linear infinite;
   text-shadow: none;
   filter: drop-shadow(0 0 30px rgba(220, 38, 38, 0.5));
+  will-change: background-position;
 }
 
 @keyframes shimmer {
@@ -320,7 +329,8 @@ body {
   font-size: clamp(2rem, 5vw, 3rem);
   display: inline-block;
   filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.6));
-  animation: axeSwing 2s ease-in-out infinite;
+  animation: axeSwing 2.5s ease-in-out infinite;
+  will-change: transform;
 }
 
 .hero-title .emoji:first-child {
@@ -476,7 +486,7 @@ body {
 }
 
 .info-card h3 {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--color-text-muted);
   margin-bottom: var(--spacing-md);
@@ -515,8 +525,8 @@ body {
 }
 
 .prize-item.gold .amount { color: var(--color-gold); }
-.prize-item.silver .amount { color: #c0c0c0; }
-.prize-item.bronze .amount { color: #cd7f32; }
+.prize-item.silver .amount { color: var(--color-silver); }
+.prize-item.bronze .amount { color: var(--color-bronze); }
 
 /* Rules Card */
 .rules-list {
@@ -1050,7 +1060,7 @@ body {
   line-height: 1.2;
 }
 
-.stat-card .stat-value.green { color: #4ade80; }
+.stat-card .stat-value.green { color: var(--color-75th); }
 .stat-card .stat-value.red { color: var(--color-accent-light); }
 
 .stat-card .stat-label {
@@ -1143,8 +1153,8 @@ body {
 
 /* Finish Position Colors */
 .finish-1 { color: var(--color-gold) !important; font-weight: 700; }
-.finish-2 { color: #c0c0c0 !important; font-weight: 600; }
-.finish-3 { color: #cd7f32 !important; font-weight: 600; }
+.finish-2 { color: var(--color-silver) !important; font-weight: 600; }
+.finish-3 { color: var(--color-bronze) !important; font-weight: 600; }
 .finish-na { color: var(--color-text-muted) !important; }
 
 /* Legend */
@@ -1171,8 +1181,8 @@ body {
 }
 
 .legend-dot.gold { background: var(--color-gold); }
-.legend-dot.silver { background: #c0c0c0; }
-.legend-dot.bronze { background: #cd7f32; }
+.legend-dot.silver { background: var(--color-silver); }
+.legend-dot.bronze { background: var(--color-bronze); }
 
 /* Responsive */
 @media (max-width: 1024px) {

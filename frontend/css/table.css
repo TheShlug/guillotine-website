@@ -110,19 +110,19 @@
 .guillotine-table tr.summary-row td {
   font-weight: 600;
   border-bottom: none;
-  color: #1a1a24;
+  color: var(--color-text-dark);
 }
 
 .guillotine-table tr.summary-row-first td {
   border-top: 3px solid var(--color-accent);
 }
 
-.guillotine-table tr.summary-high td:not(.na-cell) { background-color: var(--color-high-score); color: #1a1a24; }
-.guillotine-table tr.summary-75th td:not(.na-cell) { background-color: var(--color-75th); color: #1a1a24; }
-.guillotine-table tr.summary-median td:not(.na-cell) { background-color: var(--color-median); color: #1a1a24; }
-.guillotine-table tr.summary-25th td:not(.na-cell) { background-color: var(--color-25th); color: #1a1a24; }
+.guillotine-table tr.summary-high td:not(.na-cell) { background-color: var(--color-high-score); color: var(--color-text-dark); }
+.guillotine-table tr.summary-75th td:not(.na-cell) { background-color: var(--color-75th); color: var(--color-text-dark); }
+.guillotine-table tr.summary-median td:not(.na-cell) { background-color: var(--color-median); color: var(--color-text-dark); }
+.guillotine-table tr.summary-25th td:not(.na-cell) { background-color: var(--color-25th); color: var(--color-text-dark); }
 .guillotine-table tr.summary-chop td:not(.na-cell) { background-color: var(--color-chop); color: white; }
-.guillotine-table tr.summary-diff td:not(.na-cell) { background-color: var(--color-chop-delta); color: #1a1a24; }
+.guillotine-table tr.summary-diff td:not(.na-cell) { background-color: var(--color-chop-delta); color: var(--color-text-dark); }
 
 /* Summary row manager/label cells - ensure visibility */
 .guillotine-table tr.summary-row td.manager-cell {
@@ -177,18 +177,18 @@
 /* Champion indicator */
 .champion-badge {
   background: linear-gradient(135deg, var(--color-gold), #d97706);
-  color: #1a1a24;
+  color: var(--color-text-dark);
   box-shadow: var(--shadow-gold-glow);
 }
 
 /* Rank badges for 2nd and 3rd place */
 .rank-badge.second {
   background: linear-gradient(135deg, #d1d5db, #9ca3af);
-  color: #1a1a24;
+  color: var(--color-text-dark);
 }
 
 .rank-badge.third {
-  background: linear-gradient(135deg, #cd7f32, #a16207);
+  background: linear-gradient(135deg, var(--color-bronze), #a16207);
   color: white;
 }
 
@@ -226,7 +226,7 @@
 
 /* Export styling - make table look cleaner in PNG */
 .export-mode .table-container {
-  background: #1a1a24;
+  background: var(--color-text-dark);
   padding: 20px;
 }
 
