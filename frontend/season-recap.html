@@ -509,20 +509,20 @@
                 <div class="value">${sups.lowest_survivor_score.score.toFixed(2)} pts (Week ${sups.lowest_survivor_score.week})</div>
               </div>
             ` : ''}
-            ${sups.most_consistent ? `
+            ${sups.most_close_calls ? `
               <div class="superlative-card">
-                <div class="award">&#x1F4C8;</div>
-                <div class="title">Most Consistent</div>
-                <div class="winner">${sups.most_consistent.manager}</div>
-                <div class="value">Std Dev: ${sups.most_consistent.std_dev}</div>
+                <div class="award">&#x1F630;</div>
+                <div class="title">Most Close Calls</div>
+                <div class="winner">${sups.most_close_calls.manager}</div>
+                <div class="value">${sups.most_close_calls.count} narrow escapes</div>
               </div>
             ` : ''}
-            ${sups.most_volatile ? `
+            ${sups.best_avg_position ? `
               <div class="superlative-card">
-                <div class="award">&#x1F3A2;</div>
-                <div class="title">Boom or Bust</div>
-                <div class="winner">${sups.most_volatile.manager}</div>
-                <div class="value">Std Dev: ${sups.most_volatile.std_dev}</div>
+                <div class="award">&#x1F3AF;</div>
+                <div class="title">Most Dominant</div>
+                <div class="winner">${sups.best_avg_position.manager}</div>
+                <div class="value">Avg ${sups.best_avg_position.avg_pos} positions above chop</div>
               </div>
             ` : ''}
           </div>

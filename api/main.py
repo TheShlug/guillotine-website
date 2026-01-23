@@ -700,9 +700,8 @@ async def get_season_recap(season: int):
     # Track superlatives
     highest_score = {"score": 0, "manager": None, "week": None}
     lowest_score = {"score": float('inf'), "manager": None, "week": None}
-    most_consistent = {"manager": None, "std_dev": float('inf')}
-    most_volatile = {"manager": None, "std_dev": 0}
-    biggest_comeback = {"manager": None, "from_rank": 0, "to_rank": 0, "week": None}
+    most_close_calls = {"manager": None, "count": 0}
+    best_avg_position = {"manager": None, "avg_pos": 0}
 
     for manager in managers:
         scores = []
@@ -717,18 +716,20 @@ async def get_season_recap(season: int):
                 if score < lowest_score["score"] and not (manager.get("chop_week") == week):
                     lowest_score = {"score": score, "manager": manager["user_name"], "week": week}
 
-        if len(scores) >= 3:
-            import statistics
-            std_dev = statistics.stdev(scores)
-            if std_dev < most_consistent["std_dev"]:
-                most_consistent = {"manager": manager["user_name"], "std_dev": round(std_dev, 2)}
-            if std_dev > most_volatile["std_dev"]:
-                most_volatile = {"manager": manager["user_name"], "std_dev": round(std_dev, 2)}
+        # Track most close calls
+        close_calls = manager.get("close_calls", 0)
+        if close_calls > most_close_calls["count"]:
+            most_close_calls = {"manager": manager["user_name"], "count": close_calls}
+
+        # Track best average position above chop (higher is better)
+        avg_pos = manager.get("avg_pos_above_chop", manager.get("avg_above_chop", 0))
+        if avg_pos > best_avg_position["avg_pos"]:
+            best_avg_position = {"manager": manager["user_name"], "avg_pos": round(avg_pos, 1)}
 
     recap["superlatives"]["highest_score"] = highest_score
     recap["superlatives"]["lowest_survivor_score"] = lowest_score if lowest_score["score"] != float('inf') else None
-    recap["superlatives"]["most_consistent"] = most_consistent if most_consistent["manager"] else None
-    recap["superlatives"]["most_volatile"] = most_volatile if most_volatile["manager"] else None
+    recap["superlatives"]["most_close_calls"] = most_close_calls if most_close_calls["manager"] else None
+    recap["superlatives"]["best_avg_position"] = best_avg_position if best_avg_position["manager"] else None
 
     # Find close calls (narrowly escaped elimination)
     for week_str, stats in weekly_stats.items():

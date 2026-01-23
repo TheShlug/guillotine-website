@@ -171,6 +171,8 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
             faab_remaining[rid] = STARTING_FAAB - spent
 
     # 6. Calculate average position above chop (ranking-based) and close call counter
+    # Close calls: finished 2nd to last (1 position above chop) OR within 5 points of chop score
+    CLOSE_CALL_POINTS_THRESHOLD = 5.0
     avg_position_above_chop: Dict[int, float] = {}
     close_call_count: Dict[int, int] = {rid: 0 for rid in roster_to_user.keys()}
 
@@ -214,7 +216,20 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
                 positions_above.append(n - rank)
 
                 # Close call: finished 2nd to last (1 position above chop)
+                # OR within X points of chop score (but not chopped)
+                chop_score_this_week = chop_scores.get(week, 0)
+                my_score = all_scores[week].get(roster_id, 0)
+                points_above_chop = my_score - chop_score_this_week
+
+                is_close_call = False
                 if n - rank == 1:
+                    # Finished 2nd to last
+                    is_close_call = True
+                elif n - rank > 0 and points_above_chop <= CLOSE_CALL_POINTS_THRESHOLD:
+                    # Survived but within threshold points of chop
+                    is_close_call = True
+
+                if is_close_call:
                     close_call_count[roster_id] += 1
 
         avg_position_above_chop[roster_id] = round(statistics.mean(positions_above), 1) if positions_above else 0

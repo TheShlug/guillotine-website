@@ -24,6 +24,8 @@ let loadingOverlay;
 let tableHeaderBar;
 let mobileViewToggle;
 let pageNavSelect;
+let championBanner;
+let championName;
 
 /**
  * Initialize the application
@@ -39,6 +41,8 @@ async function init() {
   tableHeaderBar = document.getElementById('table-header-bar');
   mobileViewToggle = document.getElementById('mobile-view-toggle');
   pageNavSelect = document.getElementById('page-nav');
+  championBanner = document.getElementById('champion-banner');
+  championName = document.getElementById('champion-name');
 
   // Show loading state
   setLoading(true);
@@ -306,6 +310,25 @@ function updateTableHeader(data) {
   headerContent += `<span style="float: right;">Showing Week ${displayWeek}</span>`;
 
   tableHeaderBar.innerHTML = headerContent;
+
+  // Update champion banner
+  updateChampionBanner(data);
+}
+
+/**
+ * Update the champion banner display
+ */
+function updateChampionBanner(data) {
+  const { champion, current_week } = data;
+  const displayWeek = current_week || 17;
+
+  // Show banner if there's a champion and season is complete (week 17)
+  if (champion && displayWeek === 17) {
+    championName.textContent = champion;
+    championBanner.style.display = 'block';
+  } else {
+    championBanner.style.display = 'none';
+  }
 }
 
 // Initialize when DOM is ready

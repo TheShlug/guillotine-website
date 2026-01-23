@@ -52,6 +52,10 @@
       "dest": "/frontend/season-recap.html"
     },
     {
+      "src": "/manager/(.*)",
+      "dest": "/frontend/manager.html"
+    },
+    {
       "src": "/manager",
       "dest": "/frontend/manager.html"
     },

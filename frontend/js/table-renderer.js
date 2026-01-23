@@ -50,6 +50,27 @@ export function renderTable(data, container) {
     weekStatsCache[w] = calculateWeekStats(managers, w);
   }
 
+  // Pre-calculate rankings for each week (for rank display in cells)
+  const weekRankings = {};
+  for (let w = 1; w <= displayWeek; w++) {
+    const weekStr = String(w);
+    // Get all alive managers' scores for this week
+    const weekScores = managers
+      .filter(m => {
+        const isAlive = !m.chop_week || m.chop_week >= w;
+        const score = m.weekly_scores[weekStr];
+        return isAlive && score !== null && score !== undefined;
+      })
+      .map(m => ({ userName: m.user_name, score: m.weekly_scores[weekStr] }))
+      .sort((a, b) => b.score - a.score);  // Sort descending (rank 1 = highest)
+
+    // Assign ranks
+    weekRankings[w] = {};
+    weekScores.forEach((item, index) => {
+      weekRankings[w][item.userName] = index + 1;
+    });
+  }
+
   // Create table
   const table = document.createElement('table');
   table.className = 'guillotine-table';
@@ -73,7 +94,7 @@ export function renderTable(data, container) {
   }
 
   if (hasCloseCalls) {
-    fixedHeaders.push({ label: 'Close<br>Calls', className: 'col-close-calls', title: 'Weeks finished 2nd to last (1 spot above elimination)' });
+    fixedHeaders.push({ label: 'Close<br>Calls', className: 'col-close-calls', title: 'Weeks finished 2nd to last OR within 5 points of elimination' });
   }
 
   fixedHeaders.push(
@@ -252,7 +273,8 @@ export function renderTable(data, container) {
       } else if (isChopWeek) {
         // Chop week cell - dark red
         cell.classList.add('chop-cell');
-        cell.textContent = score.toFixed(2);
+        const rank = weekRankings[w]?.[manager.user_name];
+        cell.innerHTML = `<span class="score-value">${score.toFixed(2)}</span>${rank ? `<span class="score-rank">${rank}</span>` : ''}`;
       } else {
         // Normal score cell with gradient
         const stats = weekStatsCache[w];
@@ -261,7 +283,8 @@ export function renderTable(data, container) {
 
         cell.style.backgroundColor = bgColor;
         cell.style.color = textColor;
-        cell.textContent = score.toFixed(2);
+        const rank = weekRankings[w]?.[manager.user_name];
+        cell.innerHTML = `<span class="score-value">${score.toFixed(2)}</span>${rank ? `<span class="score-rank">${rank}</span>` : ''}`;
       }
 
       // Add divider class after weeks 4 and 8

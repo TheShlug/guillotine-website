@@ -19,8 +19,8 @@
   --color-gold-glow: rgba(251, 191, 36, 0.15);
 
   /* Medal colors */
-  --color-silver: var(--color-silver);
-  --color-bronze: var(--color-bronze);
+  --color-silver: #c0c0c0;
+  --color-bronze: #cd7f32;
   --color-text-dark: #1a1a24;
 
   /* Text colors - improved hierarchy */
@@ -40,7 +40,7 @@
 
   /* Summary row colors */
   --color-high-score: #22c55e;
-  --color-75th: var(--color-75th);
+  --color-75th: #86efac;
   --color-median: #e2e8f0;
   --color-25th: #fca5a5;
   --color-chop: #ef4444;
@@ -398,6 +398,97 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Champion Banner */
+.champion-banner {
+  background: linear-gradient(135deg, #1a1510 0%, #2d2418 50%, #1a1510 100%);
+  border: 2px solid var(--color-gold);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.2), inset 0 0 60px rgba(251, 191, 36, 0.05);
+}
+
+.champion-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+  animation: shimmerBanner 3s ease-in-out infinite;
+}
+
+@keyframes shimmerBanner {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
+
+.champion-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  position: relative;
+  z-index: 1;
+}
+
+.champion-trophy {
+  font-size: 2rem;
+  animation: trophyBounce 2s ease-in-out infinite;
+}
+
+.champion-trophy:last-child {
+  animation-delay: 0.3s;
+}
+
+@keyframes trophyBounce {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-5px) rotate(5deg); }
+}
+
+.champion-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.champion-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.champion-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-gold-light);
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+@media (max-width: 640px) {
+  .champion-banner {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .champion-trophy {
+    font-size: 1.5rem;
+  }
+
+  .champion-name {
+    font-size: 1.25rem;
+  }
+
+  .champion-label {
+    font-size: 0.65rem;
   }
 }
 
