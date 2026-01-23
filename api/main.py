@@ -580,11 +580,13 @@ async def get_manager_profile(manager_name: str):
 
             profile["career_stats"]["total_weeks_played"] += weeks_played
 
-            # FAAB stats (only for API seasons)
-            if season in LEAGUE_IDS:
+            # Close calls from all seasons
+            profile["career_stats"]["close_calls"] += manager_data.get("close_calls", 0)
+
+            # FAAB stats (only for 2025 onward - earlier data had eliminated teams zeroed)
+            if season >= 2025:
                 profile["career_stats"]["total_faab_spent"] += manager_data.get("faab_spent", 0)
                 profile["career_stats"]["total_faab_wasted"] += manager_data.get("faab_wasted", 0)
-                profile["career_stats"]["close_calls"] += manager_data.get("close_calls", 0)
 
             # Store season data
             profile["seasons"][str(season)] = {

@@ -164,11 +164,8 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
     faab_remaining: Dict[int, int] = {}
     for rid in roster_to_user.keys():
         spent = faab_spent.get(rid, 0)
-        # Eliminated teams show $0 FAAB
-        if rid in eliminations:
-            faab_remaining[rid] = 0
-        else:
-            faab_remaining[rid] = STARTING_FAAB - spent
+        # Keep actual FAAB remaining for all teams (including eliminated)
+        faab_remaining[rid] = STARTING_FAAB - spent
 
     # 6. Calculate average position above chop (ranking-based) and close call counter
     # Close calls: finished 2nd to last (1 position above chop) OR within 5 points of chop score

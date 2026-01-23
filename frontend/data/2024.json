@@ -28,7 +28,8 @@
         "17": null
       },
       "avg_above_chop": 0,
-      "finish_position": 18
+      "finish_position": 18,
+      "close_calls": 0
     },
     {
       "user_name": "kcorr120",
@@ -55,7 +56,8 @@
         "17": null
       },
       "avg_above_chop": 3.5,
-      "finish_position": 17
+      "finish_position": 17,
+      "close_calls": 0
     },
     {
       "user_name": "Dwightshrute34",
@@ -82,7 +84,8 @@
         "17": null
       },
       "avg_above_chop": 7,
-      "finish_position": 16
+      "finish_position": 16,
+      "close_calls": 0
     },
     {
       "user_name": "CarlPohlman",
@@ -109,7 +112,8 @@
         "17": null
       },
       "avg_above_chop": 5,
-      "finish_position": 15
+      "finish_position": 15,
+      "close_calls": 0
     },
     {
       "user_name": "alfonsog",
@@ -136,7 +140,8 @@
         "17": null
       },
       "avg_above_chop": 5.2,
-      "finish_position": 14
+      "finish_position": 14,
+      "close_calls": 1
     },
     {
       "user_name": "sionj",
@@ -163,7 +168,8 @@
         "17": null
       },
       "avg_above_chop": 5.3,
-      "finish_position": 13
+      "finish_position": 13,
+      "close_calls": 0
     },
     {
       "user_name": "EricBrill",
@@ -190,7 +196,8 @@
         "17": null
       },
       "avg_above_chop": 6.4,
-      "finish_position": 12
+      "finish_position": 12,
+      "close_calls": 0
     },
     {
       "user_name": "colemeister94",
@@ -217,7 +224,8 @@
         "17": null
       },
       "avg_above_chop": 4.5,
-      "finish_position": 11
+      "finish_position": 11,
+      "close_calls": 2
     },
     {
       "user_name": "timurdikec",
@@ -244,7 +252,8 @@
         "17": null
       },
       "avg_above_chop": 7.2,
-      "finish_position": 10
+      "finish_position": 10,
+      "close_calls": 1
     },
     {
       "user_name": "davidstekla",
@@ -271,7 +280,8 @@
         "17": null
       },
       "avg_above_chop": 5.8,
-      "finish_position": 9
+      "finish_position": 9,
+      "close_calls": 2
     },
     {
       "user_name": "0Milk0",
@@ -298,7 +308,8 @@
         "17": null
       },
       "avg_above_chop": 6,
-      "finish_position": 8
+      "finish_position": 8,
+      "close_calls": 0
     },
     {
       "user_name": "patrickbillet",
@@ -325,7 +336,8 @@
         "17": null
       },
       "avg_above_chop": 4.5,
-      "finish_position": 7
+      "finish_position": 7,
+      "close_calls": 3
     },
     {
       "user_name": "charlesrex",
@@ -352,7 +364,8 @@
         "17": null
       },
       "avg_above_chop": 6.4,
-      "finish_position": 6
+      "finish_position": 6,
+      "close_calls": 0
     },
     {
       "user_name": "WhoDatJerome",
@@ -379,7 +392,8 @@
         "17": null
       },
       "avg_above_chop": 8,
-      "finish_position": 5
+      "finish_position": 5,
+      "close_calls": 0
     },
     {
       "user_name": "skba91",
@@ -406,7 +420,8 @@
         "17": null
       },
       "avg_above_chop": 6.2,
-      "finish_position": 4
+      "finish_position": 4,
+      "close_calls": 2
     },
     {
       "user_name": "HankMoney",
@@ -433,7 +448,8 @@
         "17": null
       },
       "avg_above_chop": 5.9,
-      "finish_position": 3
+      "finish_position": 3,
+      "close_calls": 1
     },
     {
       "user_name": "CantGuardMike13",
@@ -460,7 +476,8 @@
         "17": 123.08
       },
       "avg_above_chop": 3.5,
-      "finish_position": 2
+      "finish_position": 2,
+      "close_calls": 3
     },
     {
       "user_name": "TheShlug",
@@ -487,7 +504,8 @@
         "17": 148.96
       },
       "avg_above_chop": 5.8,
-      "finish_position": 1
+      "finish_position": 1,
+      "close_calls": 4
     }
   ],
   "weekly_stats": {

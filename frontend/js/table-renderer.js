@@ -166,9 +166,10 @@ export function renderTable(data, container) {
     // FAAB remaining
     const faabCell = document.createElement('td');
     faabCell.className = 'col-faab faab-cell';
-    faabCell.textContent = manager.chop_week
-      ? '$0'
-      : `$${manager.faab_remaining}`;
+    faabCell.textContent = `$${manager.faab_remaining}`;
+    if (manager.chop_week) {
+      faabCell.classList.add('eliminated');
+    }
     row.appendChild(faabCell);
 
     // FAAB wasted (if available)
