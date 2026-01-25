@@ -255,6 +255,9 @@
   color: white;
   border-radius: var(--radius-md);
   font-size: 14px;
+  /* Ensure it doesn't get fixed positioning */
+  position: relative;
+  z-index: 1;
 }
 
 .season-info-left {
@@ -561,11 +564,6 @@
     font-size: 10px;
   }
 
-  /* Season info - smaller */
-  .season-info {
-    font-size: 12px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
 }
 
 /* OPTION 2: Card-Based Mobile View (activate with body.mobile-cards) */

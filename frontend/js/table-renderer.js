@@ -418,20 +418,8 @@ export function renderTable(data, container) {
   // Clear container and add table
   container.innerHTML = '';
 
-  // Add season info banner
-  const banner = document.createElement('div');
-  banner.className = 'season-info';
-
-  let bannerRight = `Week ${displayWeek} of 17`;
-  if (champion && displayWeek === 17) {
-    bannerRight = `Champion: ${champion}`;
-  }
-
-  banner.innerHTML = `
-    <span class="season-info-left">Season ${season}</span>
-    <span class="season-info-right">${bannerRight}</span>
-  `;
-  container.appendChild(banner);
+  // Note: Season info is now shown in the table-header-bar element (outside this container)
+  // so we don't need to add a separate banner here
 
   // Add survivor budget stats above table (only if there are remaining managers)
   if (remainingManagers.length > 0 && faabStats.avg !== null) {
