@@ -885,11 +885,13 @@ body {
 .table-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  background: var(--color-bg-card);
 }
 
 .table-container {
   padding: var(--spacing-md);
-  min-width: fit-content;
+  background: var(--color-bg-card);
+  /* Removed min-width: fit-content to prevent gray box artifacts when switching seasons with different column counts */
 }
 
 /* Footer */

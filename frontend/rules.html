@@ -227,6 +227,20 @@
       Back to Standings
     </a>
 
+    <!-- Page Navigation Dropdown -->
+    <div class="top-nav-dropdown">
+      <select id="page-nav" class="page-nav-select" onchange="if(this.value) window.location.href=this.value">
+        <option value="" disabled>Go to page...</option>
+        <option value="/">Home - Standings</option>
+        <option value="/rules" selected>League Rules</option>
+        <option value="/average-finishes">Historical Stats</option>
+        <option value="/draft-order">Draft Order</option>
+        <option value="/transactions">Transactions</option>
+        <option value="/death-bell">Death Bell</option>
+        <option value="/season-recap">Season Recap</option>
+      </select>
+    </div>
+
     <div class="page-hero">
       <h1>&#x1FA93; Guillotine League Rules &#x1FA93;</h1>
       <p>Survive or be eliminated. Only one team remains.</p>

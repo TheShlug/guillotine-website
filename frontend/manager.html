@@ -270,6 +270,20 @@
       Back to Standings
     </a>
 
+    <!-- Page Navigation Dropdown -->
+    <div class="top-nav-dropdown">
+      <select id="page-nav" class="page-nav-select" onchange="if(this.value) window.location.href=this.value">
+        <option value="" disabled selected>Go to page...</option>
+        <option value="/">Home - Standings</option>
+        <option value="/rules">League Rules</option>
+        <option value="/average-finishes">Historical Stats</option>
+        <option value="/draft-order">Draft Order</option>
+        <option value="/transactions">Transactions</option>
+        <option value="/death-bell">Death Bell</option>
+        <option value="/season-recap">Season Recap</option>
+      </select>
+    </div>
+
     <div id="profile-container">
       <div class="loading-state">
         <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
