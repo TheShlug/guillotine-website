@@ -275,15 +275,17 @@
 
   <script type="module">
     import { fetchAvailableSeasons } from '/js/api.js';
+    import { getSelectedSeason, setSelectedSeason } from '/js/season-state.js';
 
     let currentSeason = null;
+    let allSeasons = [];
 
     async function loadSeasons() {
       const seasonsInfo = await fetchAvailableSeasons();
       const selector = document.getElementById('season-selector');
 
       // Show all seasons (both API and historical)
-      const allSeasons = seasonsInfo.seasons || [];
+      allSeasons = (seasonsInfo.seasons || []).sort((a, b) => b - a);
 
       if (allSeasons.length === 0) {
         selector.innerHTML = '<p>No seasons available</p>';
@@ -293,23 +295,52 @@
       allSeasons.forEach(season => {
         const btn = document.createElement('button');
         btn.className = 'season-btn';
+        btn.dataset.season = season;
         btn.textContent = season;
-        btn.onclick = () => loadTransactions(season);
+        btn.onclick = () => selectSeason(season);
         selector.appendChild(btn);
       });
 
-      // Load most recent season
-      currentSeason = Math.max(...allSeasons);
+      // Use saved season from localStorage or default to most recent
+      const savedSeason = getSelectedSeason();
+      if (savedSeason && allSeasons.includes(savedSeason)) {
+        currentSeason = savedSeason;
+      } else {
+        currentSeason = Math.max(...allSeasons);
+      }
       loadTransactions(currentSeason);
+
+      // Listen for season changes from other tabs/pages
+      window.addEventListener('seasonChanged', (e) => {
+        const newSeason = e.detail.season;
+        if (newSeason !== currentSeason && allSeasons.includes(newSeason)) {
+          currentSeason = newSeason;
+          updateActiveButton(newSeason);
+          loadTransactions(newSeason);
+        }
+      });
+    }
+
+    function selectSeason(season) {
+      if (season !== currentSeason) {
+        currentSeason = season;
+        setSelectedSeason(season);
+        updateActiveButton(season);
+        loadTransactions(season);
+      }
+    }
+
+    function updateActiveButton(season) {
+      document.querySelectorAll('.season-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.season) === season);
+      });
     }
 
     async function loadTransactions(season) {
       currentSeason = season;
 
       // Update button states
-      document.querySelectorAll('.season-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent == season);
-      });
+      updateActiveButton(season);
 
       const container = document.getElementById('transactions-container');
       const statsContainer = document.getElementById('stats-container');

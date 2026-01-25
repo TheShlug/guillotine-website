@@ -4,6 +4,7 @@
 
 import { fetchSeasonData, fetchCurrentWeek, fetchAvailableSeasons } from './api.js';
 import { renderTable, exportToPNG } from './table-renderer.js';
+import { getSelectedSeason, setSelectedSeason } from './season-state.js';
 
 // Application state
 const state = {
@@ -11,7 +12,8 @@ const state = {
   season: null,
   week: 17,
   data: null,
-  loading: false
+  loading: false,
+  reigningChampion: null  // Cached reigning champion info
 };
 
 // DOM elements
@@ -52,8 +54,14 @@ async function init() {
     const seasonsData = await fetchAvailableSeasons();
     state.seasons = seasonsData.seasons;
 
-    // Default to the most recent season
-    state.season = state.seasons[state.seasons.length - 1];
+    // Use saved season from localStorage or default to most recent
+    const savedSeason = getSelectedSeason();
+    if (savedSeason && state.seasons.includes(savedSeason)) {
+      state.season = savedSeason;
+    } else {
+      state.season = state.seasons[state.seasons.length - 1];
+      setSelectedSeason(state.season);
+    }
 
     // Populate season tabs
     populateSeasonTabs();
@@ -63,6 +71,9 @@ async function init() {
 
     // Set up event listeners
     setupEventListeners();
+
+    // Determine and cache the reigning champion (from most recent completed season)
+    await determineReigningChampion();
 
     // Auto-detect current week for live seasons
     if (seasonsData.live_seasons && seasonsData.live_seasons.includes(state.season)) {
@@ -136,6 +147,7 @@ function setupEventListeners() {
       const season = parseInt(e.target.dataset.season);
       if (season !== state.season) {
         state.season = season;
+        setSelectedSeason(season); // Save to localStorage for universal state
         updateActiveTab();
 
         // Reset week for new season
@@ -144,6 +156,18 @@ function setupEventListeners() {
 
         await loadSeasonData();
       }
+    }
+  });
+
+  // Listen for season changes from other tabs/pages
+  window.addEventListener('seasonChanged', async (e) => {
+    const newSeason = e.detail.season;
+    if (newSeason !== state.season && state.seasons.includes(newSeason)) {
+      state.season = newSeason;
+      state.week = 17;
+      weekSelector.value = state.week;
+      updateActiveTab();
+      await loadSeasonData();
     }
   });
 
@@ -316,15 +340,40 @@ function updateTableHeader(data) {
 }
 
 /**
- * Update the champion banner display
+ * Determine the reigning champion from the most recent completed season.
+ * Called once at init and cached in state.
+ */
+async function determineReigningChampion() {
+  const allSeasons = [...state.seasons].sort((a, b) => a - b);
+
+  // Check seasons from newest to oldest to find the most recent with a champion
+  for (let i = allSeasons.length - 1; i >= 0; i--) {
+    const seasonYear = allSeasons[i];
+    try {
+      const seasonData = await fetchSeasonData(seasonYear, 17);
+      if (seasonData.champion) {
+        state.reigningChampion = {
+          name: seasonData.champion,
+          season: seasonYear
+        };
+        break;
+      }
+    } catch (e) {
+      // Season data not available, continue to next
+      continue;
+    }
+  }
+}
+
+/**
+ * Update the champion banner display.
+ * Always shows the REIGNING champion (from the most recent completed season).
+ * The reigning champ stays until the next season finishes.
  */
 function updateChampionBanner(data) {
-  const { champion, current_week } = data;
-  const displayWeek = current_week || 17;
-
-  // Show banner if there's a champion and season is complete (week 17)
-  if (champion && displayWeek === 17) {
-    championName.textContent = champion;
+  // Always show the cached reigning champion, regardless of which season is being viewed
+  if (state.reigningChampion) {
+    championName.textContent = state.reigningChampion.name;
     championBanner.style.display = 'block';
   } else {
     championBanner.style.display = 'none';
