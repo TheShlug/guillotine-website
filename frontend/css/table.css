@@ -278,7 +278,7 @@
   gap: var(--spacing-md) var(--spacing-xl);
   margin-bottom: var(--spacing-md);
   padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-bg-elevated);
+  background: var(--color-bg-card);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   font-size: 13px;
@@ -483,6 +483,18 @@
   /* Make the table wrapper handle horizontal scroll */
   .table-wrapper {
     position: relative;
+  }
+
+  /* Ensure table container fills but doesn't overflow */
+  .table-container {
+    width: fit-content;
+    min-width: 100%;
+  }
+
+  /* Ensure budget stats don't cause width issues */
+  .budget-stats {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   /* Sticky manager column */
