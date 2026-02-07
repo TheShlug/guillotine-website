@@ -347,38 +347,34 @@ export function renderTable(data, container) {
       row.classList.add('summary-row-first');
     }
 
-    // Empty cells for fixed columns (include column classes for consistent sizing)
+    // Empty cells for fixed columns — use col classes for sizing but NOT na-cell,
+    // so that summary row color rules (td:not(.na-cell)) apply correctly
     const draftCell = document.createElement('td');
-    draftCell.classList.add('na-cell', 'col-draft');
+    draftCell.classList.add('col-draft');
     row.appendChild(draftCell);
 
-    // Avg above chop - empty for summary rows
     const avgCell = document.createElement('td');
-    avgCell.classList.add('na-cell', 'col-avg');
+    avgCell.classList.add('col-avg');
     row.appendChild(avgCell);
 
-    // FAAB remaining - empty for summary rows
     const faabCell = document.createElement('td');
-    faabCell.className = 'col-faab faab-cell na-cell';
+    faabCell.classList.add('col-faab');
     row.appendChild(faabCell);
 
-    // FAAB wasted (empty, if column exists)
     if (hasFaabWasted) {
       const faabWastedCell = document.createElement('td');
-      faabWastedCell.classList.add('na-cell', 'col-faab-wasted');
+      faabWastedCell.classList.add('col-faab-wasted');
       row.appendChild(faabWastedCell);
     }
 
-    // Close calls (empty, if column exists)
     if (hasCloseCalls) {
       const closeCallsCell = document.createElement('td');
-      closeCallsCell.classList.add('na-cell', 'col-close-calls');
+      closeCallsCell.classList.add('col-close-calls');
       row.appendChild(closeCallsCell);
     }
 
-    // Chop week empty
     const chopCell = document.createElement('td');
-    chopCell.classList.add('na-cell', 'col-chop');
+    chopCell.classList.add('col-chop');
     row.appendChild(chopCell);
 
     // Summary label
