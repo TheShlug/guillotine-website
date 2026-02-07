@@ -883,7 +883,6 @@ body {
     border-radius: 0;
     border-left: none;
     border-right: none;
-    overflow: visible;
   }
 }
 
@@ -896,7 +895,8 @@ body {
 
 .table-wrapper {
   overflow-x: auto;
-  background: var(--color-bg-card);
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-bg);
 }
 
 .table-container {

@@ -347,39 +347,43 @@ export function renderTable(data, container) {
       row.classList.add('summary-row-first');
     }
 
-    // Empty cells for fixed columns — use col classes for sizing but NOT na-cell,
-    // so that summary row color rules (td:not(.na-cell)) apply correctly
+    // Empty cells for fixed columns
     const draftCell = document.createElement('td');
-    draftCell.classList.add('col-draft');
+    draftCell.classList.add('na-cell');
     row.appendChild(draftCell);
 
+    // Avg above chop - empty for summary rows
     const avgCell = document.createElement('td');
-    avgCell.classList.add('col-avg');
+    avgCell.classList.add('na-cell');
     row.appendChild(avgCell);
 
+    // FAAB remaining - empty for summary rows
     const faabCell = document.createElement('td');
-    faabCell.classList.add('col-faab');
+    faabCell.className = 'faab-cell na-cell';
     row.appendChild(faabCell);
 
+    // FAAB wasted (empty, if column exists)
     if (hasFaabWasted) {
       const faabWastedCell = document.createElement('td');
-      faabWastedCell.classList.add('col-faab-wasted');
+      faabWastedCell.classList.add('na-cell');
       row.appendChild(faabWastedCell);
     }
 
+    // Close calls (empty, if column exists)
     if (hasCloseCalls) {
       const closeCallsCell = document.createElement('td');
-      closeCallsCell.classList.add('col-close-calls');
+      closeCallsCell.classList.add('na-cell');
       row.appendChild(closeCallsCell);
     }
 
+    // Chop week empty
     const chopCell = document.createElement('td');
-    chopCell.classList.add('col-chop');
+    chopCell.classList.add('na-cell');
     row.appendChild(chopCell);
 
     // Summary label
     const labelCell = document.createElement('td');
-    labelCell.className = 'col-manager manager-cell';
+    labelCell.className = 'manager-cell';
     labelCell.textContent = sr.label;
     row.appendChild(labelCell);
 
@@ -417,8 +421,8 @@ export function renderTable(data, container) {
   // Note: Season info is now shown in the table-header-bar element (outside this container)
   // so we don't need to add a separate banner here
 
-  // Add survivor budget stats above table (only for in-progress seasons with remaining managers)
-  if (!isCompletedSeason && remainingManagers.length > 0 && faabStats.avg !== null) {
+  // Add survivor budget stats above table (only if there are remaining managers)
+  if (remainingManagers.length > 0 && faabStats.avg !== null) {
     const budgetStats = document.createElement('div');
     budgetStats.className = 'budget-stats';
     budgetStats.innerHTML = `

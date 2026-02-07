@@ -287,7 +287,7 @@ function updateActiveTab() {
 function setLoading(loading) {
   state.loading = loading;
   loadingOverlay.classList.toggle('visible', loading);
-  tableSection.style.display = loading ? 'none' : '';
+  tableSection.style.display = loading ? 'none' : 'block';
 }
 
 /**
