@@ -124,6 +124,14 @@
 .guillotine-table tr.summary-chop td:not(.na-cell) { background-color: var(--color-chop); color: white; }
 .guillotine-table tr.summary-diff td:not(.na-cell) { background-color: var(--color-chop-delta); color: var(--color-text-dark); }
 
+/* Summary row na-cells should match their row color instead of showing black */
+.guillotine-table tr.summary-high td.na-cell { background-color: var(--color-high-score) !important; color: var(--color-text-dark) !important; }
+.guillotine-table tr.summary-75th td.na-cell { background-color: var(--color-75th) !important; color: var(--color-text-dark) !important; }
+.guillotine-table tr.summary-median td.na-cell { background-color: var(--color-median) !important; color: var(--color-text-dark) !important; }
+.guillotine-table tr.summary-25th td.na-cell { background-color: var(--color-25th) !important; color: var(--color-text-dark) !important; }
+.guillotine-table tr.summary-chop td.na-cell { background-color: var(--color-chop) !important; color: white !important; }
+.guillotine-table tr.summary-diff td.na-cell { background-color: var(--color-chop-delta) !important; color: var(--color-text-dark) !important; }
+
 /* Summary row manager/label cells - ensure visibility */
 .guillotine-table tr.summary-row td.manager-cell {
   font-weight: 700;
