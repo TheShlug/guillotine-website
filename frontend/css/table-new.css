@@ -1,0 +1,360 @@
+/* ==========================================================================
+   GUILLOTINE FANTASY FOOTBALL — STANDINGS TABLE (MOBILE-FIRST)
+   Replaces table.css (deleted in Task 12). Standalone — no dependency on
+   the old table.css. Relies on CSS custom properties from design-system.css.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. TABLE WRAPPER
+   -------------------------------------------------------------------------- */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Edge-to-edge on mobile: pull left/right by page-padding, restore with padding */
+  margin-left: calc(-1 * var(--page-padding));
+  margin-right: calc(-1 * var(--page-padding));
+  padding-left: var(--page-padding);
+  padding-right: var(--page-padding);
+}
+
+
+/* --------------------------------------------------------------------------
+   2. MAIN TABLE
+   -------------------------------------------------------------------------- */
+.guillotine-table {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
+}
+
+.guillotine-table th,
+.guillotine-table td {
+  padding: 4px 6px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+
+/* --------------------------------------------------------------------------
+   3. HEADER
+   -------------------------------------------------------------------------- */
+.guillotine-table thead th {
+  position: sticky;
+  top: var(--nav-height);
+  z-index: 10;
+  background: var(--bg);
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+
+/* --------------------------------------------------------------------------
+   4. COLUMN CLASSES
+   -------------------------------------------------------------------------- */
+
+/* Rank */
+.col-rank {
+  width: 28px;
+  text-align: center;
+}
+
+/* Manager — sticky on mobile */
+.col-manager {
+  min-width: 100px;
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: var(--bg);
+}
+
+/* Manager header cell needs higher z-index so it sits above sticky body cells */
+thead .col-manager {
+  z-index: 15;
+}
+
+/* Draft pick */
+.col-draft {
+  width: 45px;
+  text-align: center;
+}
+
+/* Average score */
+.col-avg {
+  width: 50px;
+  text-align: center;
+}
+
+/* FAAB remaining */
+.col-faab {
+  width: 55px;
+  text-align: right;
+}
+
+/* FAAB wasted */
+.col-faab-wasted {
+  width: 55px;
+  text-align: right;
+}
+
+/* Close calls */
+.col-close-calls {
+  width: 40px;
+  text-align: center;
+}
+
+/* Chop / elimination column */
+.col-chop {
+  width: 40px;
+  text-align: center;
+}
+
+/* Weekly score columns */
+.col-week {
+  width: 58px;
+  text-align: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. MANAGER CELL
+   -------------------------------------------------------------------------- */
+.manager-cell {
+  font-weight: 600;
+}
+
+.manager-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.manager-link:hover {
+  color: var(--accent);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. SCORE CELLS
+   -------------------------------------------------------------------------- */
+.score-cell {
+  position: relative;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Score value sits above the heatmap background overlay */
+.score-value {
+  position: relative;
+  z-index: 1;
+}
+
+/* Rank badge — small, top-right corner of the cell */
+.score-rank {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 7px;
+  line-height: 1;
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  z-index: 1;
+}
+
+
+/* --------------------------------------------------------------------------
+   7. NA CELLS
+   -------------------------------------------------------------------------- */
+.na-cell {
+  background: transparent !important;
+  color: transparent !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. CHOP CELL
+   -------------------------------------------------------------------------- */
+.chop-cell {
+  background: rgba(220, 38, 38, 0.25);
+  border-left: 2px solid var(--accent);
+}
+
+
+/* --------------------------------------------------------------------------
+   9. ELIMINATED ROW
+   -------------------------------------------------------------------------- */
+tr.eliminated {
+  opacity: 0.45;
+}
+
+tr.eliminated .manager-cell {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent);
+}
+
+tr.eliminated .col-manager {
+  border-left: 2px solid var(--accent);
+}
+
+
+/* --------------------------------------------------------------------------
+   10. RECENTLY CHOPPED ROW
+   -------------------------------------------------------------------------- */
+tr.recently-chopped {
+  opacity: 0.7;
+}
+
+
+/* --------------------------------------------------------------------------
+   11. WEEK DIVIDERS — after weeks 4 and 8
+   -------------------------------------------------------------------------- */
+.col-week-divider {
+  border-right: 2px solid var(--surface-border-hover);
+}
+
+
+/* --------------------------------------------------------------------------
+   12. SUMMARY ROWS
+   -------------------------------------------------------------------------- */
+.summary-row {
+  font-weight: 600;
+}
+
+/* First summary row gets a top border to separate from data rows */
+.summary-row:first-of-type td,
+.summary-row:first-of-type th {
+  border-top: 2px solid var(--surface-border-hover);
+}
+
+.summary-row .summary-label {
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+/* Summary color variants */
+.summary-high   { color: var(--success); }
+.summary-75th   { color: var(--text-secondary); }
+.summary-25th   { color: var(--text-secondary); }
+.summary-median { color: var(--text-primary); }
+.summary-chop   { color: var(--accent); }
+.summary-diff   { color: var(--text-tertiary); }
+
+
+/* --------------------------------------------------------------------------
+   13. CLOSE CALL INDICATOR
+   -------------------------------------------------------------------------- */
+.close-call-indicator {
+  position: absolute;
+  bottom: 1px;
+  left: 2px;
+  color: var(--warning);
+  font-size: 7px;
+  line-height: 1;
+}
+
+
+/* --------------------------------------------------------------------------
+   14. MOBILE VIEW MODES  (max-width: 767px)
+   -------------------------------------------------------------------------- */
+
+/* --- minimal: show only rank, manager, and week scores --- */
+@media (max-width: 767px) {
+  body.mobile-minimal .col-draft,
+  body.mobile-minimal .col-avg,
+  body.mobile-minimal .col-faab,
+  body.mobile-minimal .col-faab-wasted,
+  body.mobile-minimal .col-close-calls,
+  body.mobile-minimal .col-chop {
+    display: none;
+  }
+}
+
+/* --- compact: same column hiding PLUS condensed week columns --- */
+@media (max-width: 767px) {
+  body.mobile-compact .col-draft,
+  body.mobile-compact .col-avg,
+  body.mobile-compact .col-faab,
+  body.mobile-compact .col-faab-wasted,
+  body.mobile-compact .col-close-calls,
+  body.mobile-compact .col-chop {
+    display: none;
+  }
+
+  /* Collapse week columns to a narrow dot/heatmap strip */
+  body.mobile-compact .col-week {
+    width: 20px;
+  }
+
+  /* Hide text content inside week cells — heatmap color still visible */
+  body.mobile-compact .score-value,
+  body.mobile-compact .score-rank {
+    display: none;
+  }
+
+  /* Hide summary rows entirely in compact mode */
+  body.mobile-compact .summary-row {
+    display: none;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   15. DESKTOP STYLES  (min-width: 768px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  /* Larger font and more breathing room */
+  .guillotine-table {
+    font-size: var(--text-sm);
+  }
+
+  .guillotine-table th,
+  .guillotine-table td {
+    padding: 6px 8px;
+  }
+
+  /* Manager column: no longer sticky on desktop */
+  .col-manager {
+    position: static;
+    min-width: 130px;
+  }
+
+  /* Slightly larger rank badge */
+  .score-rank {
+    font-size: 9px;
+  }
+
+  /* Row hover — brightness lift; exclude summary and eliminated rows */
+  .guillotine-table tbody tr:not(.summary-row):not(.eliminated):hover td {
+    filter: brightness(1.15);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   16. EXPORT MODE
+   -------------------------------------------------------------------------- */
+.export-mode .table-wrapper {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  overflow-x: visible;
+}
+
+.export-mode .guillotine-table {
+  background: var(--bg);
+}
+
+/* Manager column: not sticky in export — avoids clipping artefacts */
+.export-mode .col-manager {
+  position: static;
+}
