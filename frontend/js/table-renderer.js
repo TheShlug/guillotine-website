@@ -359,33 +359,33 @@ export function renderTable(data, container) {
       row.classList.add('summary-row-first');
     }
 
-    // Empty fixed columns — use same col-* classes as manager rows so mobile CSS hides them in sync
+    // Empty fixed columns — NO na-cell class so they inherit the summary row background color
     const draftEmpty = document.createElement('td');
-    draftEmpty.className = 'col-draft na-cell';
+    draftEmpty.className = 'col-draft';
     row.appendChild(draftEmpty);
 
     const avgEmpty = document.createElement('td');
-    avgEmpty.className = 'col-avg na-cell';
+    avgEmpty.className = 'col-avg';
     row.appendChild(avgEmpty);
 
     const faabEmpty = document.createElement('td');
-    faabEmpty.className = 'col-faab faab-cell na-cell';
+    faabEmpty.className = 'col-faab';
     row.appendChild(faabEmpty);
 
     if (hasFaabWasted) {
       const cell = document.createElement('td');
-      cell.className = 'col-faab-wasted na-cell';
+      cell.className = 'col-faab-wasted';
       row.appendChild(cell);
     }
 
     if (hasCloseCalls) {
       const cell = document.createElement('td');
-      cell.className = 'col-close-calls na-cell';
+      cell.className = 'col-close-calls';
       row.appendChild(cell);
     }
 
     const chopEmpty = document.createElement('td');
-    chopEmpty.className = 'col-chop na-cell';
+    chopEmpty.className = 'col-chop';
     row.appendChild(chopEmpty);
 
     // Summary label
