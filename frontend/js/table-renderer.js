@@ -359,44 +359,45 @@ export function renderTable(data, container) {
       row.classList.add('summary-row-first');
     }
 
-    // Empty fixed columns
+    // Empty fixed columns — use same col-* classes as manager rows so mobile CSS hides them in sync
     const draftEmpty = document.createElement('td');
-    draftEmpty.classList.add('na-cell');
+    draftEmpty.className = 'col-draft na-cell';
     row.appendChild(draftEmpty);
 
     const avgEmpty = document.createElement('td');
-    avgEmpty.classList.add('na-cell');
+    avgEmpty.className = 'col-avg na-cell';
     row.appendChild(avgEmpty);
 
     const faabEmpty = document.createElement('td');
-    faabEmpty.className = 'faab-cell na-cell';
+    faabEmpty.className = 'col-faab faab-cell na-cell';
     row.appendChild(faabEmpty);
 
     if (hasFaabWasted) {
       const cell = document.createElement('td');
-      cell.classList.add('na-cell');
+      cell.className = 'col-faab-wasted na-cell';
       row.appendChild(cell);
     }
 
     if (hasCloseCalls) {
       const cell = document.createElement('td');
-      cell.classList.add('na-cell');
+      cell.className = 'col-close-calls na-cell';
       row.appendChild(cell);
     }
 
     const chopEmpty = document.createElement('td');
-    chopEmpty.classList.add('na-cell');
+    chopEmpty.className = 'col-chop na-cell';
     row.appendChild(chopEmpty);
 
     // Summary label
     const labelCell = document.createElement('td');
-    labelCell.className = 'manager-cell';
+    labelCell.className = 'col-manager manager-cell';
     labelCell.textContent = sr.label;
     row.appendChild(labelCell);
 
     // Week values
     for (let w = 1; w <= 17; w++) {
       const cell = document.createElement('td');
+      cell.className = 'col-week';
       const isFutureWeek = w > displayWeek;
 
       if (isFutureWeek || !weekly_stats[String(w)]) {

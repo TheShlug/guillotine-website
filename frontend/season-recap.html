@@ -294,6 +294,29 @@
         text-align: center;
       }
     }
+
+    @media (max-width: 640px) {
+      .superlatives-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-sm);
+      }
+
+      .superlative-card {
+        padding: var(--spacing-md);
+      }
+
+      .superlative-card .award {
+        font-size: 1.5rem;
+      }
+
+      .superlative-card .winner {
+        font-size: 0.95rem;
+      }
+
+      .superlative-card .value {
+        font-size: 0.8rem;
+      }
+    }
   </style>
 </head>
 <body>

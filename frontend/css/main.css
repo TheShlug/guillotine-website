@@ -918,12 +918,12 @@ h1, h2, h3, h4 {
 .table-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  background: var(--color-bg);
+  background: transparent;
 }
 
 .table-container {
   padding: var(--spacing-md);
-  background: var(--color-bg-card);
+  background: transparent;
 }
 
 /* Footer */
