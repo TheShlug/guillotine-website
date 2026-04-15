@@ -32,6 +32,10 @@
       "dest": "/frontend/rules.html"
     },
     {
+      "src": "/managers",
+      "dest": "/frontend/managers.html"
+    },
+    {
       "src": "/average-finishes",
       "dest": "/frontend/average-finishes.html"
     },

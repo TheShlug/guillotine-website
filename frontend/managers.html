@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="All league managers in The Guillotine Fantasy Football League.">
+  <meta name="theme-color" content="#dc2626">
+  <title>League Managers - The Guillotine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
+  <style>
+    .managers-page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-hero {
+      text-align: center;
+      padding: var(--spacing-xl) var(--spacing-lg);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .page-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .page-hero p {
+      color: var(--color-text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .managers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .manager-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      transition: border-color var(--transition-fast), transform var(--transition-fast);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .manager-card:hover {
+      border-color: var(--color-accent);
+      transform: translateY(-2px);
+    }
+
+    .manager-card-name {
+      font-family: var(--font-heading, 'Oswald', sans-serif);
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .manager-card-badges {
+      display: flex;
+      gap: var(--spacing-xs);
+      margin-bottom: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+
+    .manager-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .manager-badge.champ {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--color-gold);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .manager-badge.veteran {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .manager-card-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-sm);
+    }
+
+    .manager-card-stat {
+      text-align: center;
+      padding: var(--spacing-xs);
+    }
+
+    .manager-card-stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .manager-card-stat-label {
+      font-size: 0.7rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .manager-card-finishes {
+      margin-top: var(--spacing-md);
+      display: flex;
+      gap: var(--spacing-xs);
+      flex-wrap: wrap;
+    }
+
+    .finish-tag {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg-elevated);
+      color: var(--color-text-secondary);
+    }
+
+    .finish-tag.gold {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--color-gold);
+    }
+
+    .finish-tag.silver {
+      background: rgba(168, 168, 168, 0.2);
+      color: #a8a8a8;
+    }
+
+    .finish-tag.bronze {
+      background: rgba(205, 127, 50, 0.2);
+      color: #cd7f32;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: var(--spacing-2xl);
+      color: var(--color-text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .page-hero h1 {
+        font-size: 1.75rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .managers-grid {
+        grid-template-columns: 1fr;
+        padding: var(--spacing-sm);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container managers-page">
+    <nav class="page-nav">
+      <a href="/" class="page-nav-link">Standings</a>
+      <a href="/rules" class="page-nav-link">Rules</a>
+      <a href="/managers" class="page-nav-link active">Managers</a>
+      <a href="/average-finishes" class="page-nav-link">Stats</a>
+      <a href="/draft-order" class="page-nav-link">Draft</a>
+      <a href="/transactions" class="page-nav-link">Transactions</a>
+      <a href="/death-bell" class="page-nav-link">Death Bell</a>
+      <a href="/season-recap" class="page-nav-link">Recap</a>
+    </nav>
+
+    <div class="page-hero">
+      <h1>&#x1FA93; League Managers</h1>
+      <p>Click a manager to view their full profile</p>
+    </div>
+
+    <div class="managers-grid" id="managers-grid">
+      <div class="loading-state">
+        <div class="axe-spinner" style="font-size: 2rem; margin-bottom: 1rem;">&#x1FA93;</div>
+        <p>Loading managers...</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Home
+        </a>
+        <a href="/rules" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          League Rules
+        </a>
+        <a href="/draft-order" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 3l7 7"/>
+          </svg>
+          Draft Order
+        </a>
+        <a href="/transactions" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Transactions
+        </a>
+        <a href="/death-bell" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M3 21h18M7 13v8M17 13v8M12 13v8"/>
+          </svg>
+          Death Bell
+        </a>
+        <a href="/season-recap" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Season Recap
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
+
+  <script type="module">
+    async function loadManagers() {
+      const grid = document.getElementById('managers-grid');
+
+      try {
+        const resp = await fetch('/api/average-finishes');
+        const data = await resp.json();
+        const managers = data.managers || data;
+
+        // Sort by average finish
+        managers.sort((a, b) => (a.average_finish || 99) - (b.average_finish || 99));
+
+        let html = '';
+        managers.forEach(m => {
+          const seasons = Object.entries(m.finishes || {}).filter(([, f]) => f != null);
+          const championships = seasons.filter(([, f]) => f === 1).length;
+          const seasonsPlayed = seasons.length;
+          const bestFinish = seasons.length > 0 ? Math.min(...seasons.map(([, f]) => f)) : null;
+
+          // Badges
+          let badges = '';
+          if (championships > 0) {
+            badges += '<span class="manager-badge champ">\u{1F3C6} ' + championships + 'x Champion</span>';
+          }
+          if (seasonsPlayed >= 3) {
+            badges += '<span class="manager-badge veteran">Veteran</span>';
+          }
+
+          // Finish tags
+          const finishTags = seasons
+            .sort(([a], [b]) => Number(a) - Number(b))
+            .map(([year, finish]) => {
+              let cls = '';
+              if (finish === 1) cls = 'gold';
+              else if (finish === 2) cls = 'silver';
+              else if (finish === 3) cls = 'bronze';
+              return '<span class="finish-tag ' + cls + '">' + year + ': ' + getOrdinal(finish) + '</span>';
+            }).join('');
+
+          html += `
+            <a href="/manager/${encodeURIComponent(m.user_name)}" class="manager-card">
+              <div class="manager-card-name">${escapeHtml(m.user_name)}</div>
+              <div class="manager-card-badges">${badges}</div>
+              <div class="manager-card-stats">
+                <div class="manager-card-stat">
+                  <div class="manager-card-stat-value">${seasonsPlayed}</div>
+                  <div class="manager-card-stat-label">Seasons</div>
+                </div>
+                <div class="manager-card-stat">
+                  <div class="manager-card-stat-value">${m.average_finish ? m.average_finish.toFixed(1) : '-'}</div>
+                  <div class="manager-card-stat-label">Avg Finish</div>
+                </div>
+                <div class="manager-card-stat">
+                  <div class="manager-card-stat-value">${championships}</div>
+                  <div class="manager-card-stat-label">Titles</div>
+                </div>
+                <div class="manager-card-stat">
+                  <div class="manager-card-stat-value">${bestFinish !== null ? getOrdinal(bestFinish) : '-'}</div>
+                  <div class="manager-card-stat-label">Best Finish</div>
+                </div>
+              </div>
+              <div class="manager-card-finishes">${finishTags}</div>
+            </a>
+          `;
+        });
+
+        grid.innerHTML = html;
+
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<p style="text-align:center;color:var(--color-text-muted);">Failed to load managers</p>';
+      }
+    }
+
+    function getOrdinal(n) {
+      const s = ['th', 'st', 'nd', 'rd'];
+      const v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    loadManagers();
+  </script>
+</body>
+</html>

@@ -427,6 +427,15 @@ async def serve_index():
     raise HTTPException(status_code=404, detail="Frontend not found")
 
 
+@app.get("/managers")
+async def serve_managers_page():
+    """Serve the managers page."""
+    page_path = FRONTEND_DIR / "managers.html"
+    if page_path.exists():
+        return FileResponse(page_path)
+    raise HTTPException(status_code=404, detail="Page not found")
+
+
 @app.get("/average-finishes")
 async def serve_average_finishes_page():
     """Serve the average finishes page."""
