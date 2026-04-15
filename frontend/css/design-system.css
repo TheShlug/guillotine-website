@@ -388,14 +388,12 @@ h4 { font-size: var(--text-lg); }
 
 
 /* --------------------------------------------------------------------------
-   13. DIVIDER PLACEHOLDER
+   13. DIVIDER — BLOOD DRIP
    -------------------------------------------------------------------------- */
 .divider-drip {
   width: 100%;
-  height: 1px;
-  background: var(--surface-border);
-  margin: var(--space-6) 0;
-  position: relative;
+  height: 16px;
+  display: block;
 }
 
 
