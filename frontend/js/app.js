@@ -261,16 +261,16 @@ function updateEliminationCard() {
 
   const data = state.data;
 
-  // No data or no managers — hide card
   if (!data || !data.managers || data.managers.length === 0) {
     card.style.display = 'none';
     return;
   }
 
-  const { current_week, champion, managers, season } = data;
+  const { champion, managers, weekly_stats } = data;
+  const season = data.season;
 
-  // Pre-season states — show season info
-  if (current_week === 0 || data.status === 'pre_draft' || data.status === 'drafting') {
+  // Pre-season
+  if (data.current_week === 0 || data.status === 'pre_draft' || data.status === 'drafting') {
     card.style.display = '';
     card.classList.remove('champion-card');
     els.elimLabel.innerHTML = `Season ${season}`;
@@ -280,8 +280,44 @@ function updateEliminationCard() {
     return;
   }
 
-  // Completed season with a champion — champion spotlight
-  if (champion) {
+  // Try to find who was chopped in the currently viewed week
+  const chopped = managers.find(m => m.chop_week === state.week);
+
+  if (chopped) {
+    // Show elimination card for this week
+    card.style.display = '';
+    card.classList.remove('champion-card');
+
+    const score = chopped.weekly_scores?.[String(state.week)];
+    const weekStat = weekly_stats?.[String(state.week)];
+    const remaining = managers.filter(m => !m.chop_week || m.chop_week > state.week).length;
+
+    els.elimLabel.innerHTML = `${skullIcon(14)} WEEK ${state.week} — THE BLADE FALLS`;
+    els.elimHeadline.textContent = `${chopped.user_name} eliminated at ${score != null ? score.toFixed(1) : '??'}`;
+
+    // Context line
+    const closeCalls = chopped.close_calls || 0;
+    const chopDiff = weekStat?.chop_differential;
+    if (chopDiff != null) {
+      els.elimContext.textContent = `${chopDiff.toFixed(1)} pts below safety`;
+    } else if (closeCalls > 0) {
+      els.elimContext.textContent = `Survived ${closeCalls} close call${closeCalls > 1 ? 's' : ''} before the drop`;
+    } else {
+      els.elimContext.textContent = '';
+    }
+
+    // Stat pills
+    els.elimStats.innerHTML = `
+      <div class="elim-stat"><span class="label">Chop</span><span class="stat-value" style="color:var(--accent);font-size:var(--text-lg);">${weekStat?.chop_score?.toFixed(1) || '-'}</span></div>
+      <div class="elim-stat"><span class="label">Median</span><span class="stat-value" style="font-size:var(--text-lg);">${weekStat?.median?.toFixed(1) || '-'}</span></div>
+      <div class="elim-stat"><span class="label">High</span><span class="stat-value" style="color:var(--success);font-size:var(--text-lg);">${weekStat?.high_score?.toFixed(1) || '-'}</span></div>
+      <div class="elim-stat"><span class="label">Alive</span><span class="stat-value" style="color:var(--success);font-size:var(--text-lg);">${remaining}</span></div>
+    `;
+    return;
+  }
+
+  // No chop this week — show champion card if season is complete, otherwise hide
+  if (champion && state.week >= 17) {
     card.style.display = '';
     card.classList.add('champion-card');
     els.elimLabel.innerHTML = `${trophyIcon(14)} CHAMPION`;
@@ -291,64 +327,8 @@ function updateEliminationCard() {
     return;
   }
 
+  card.style.display = 'none';
   card.classList.remove('champion-card');
-
-  // Find the manager chopped this week (eliminated == state.week)
-  const chopped = managers.find(m => m.eliminated_week === state.week);
-
-  if (!chopped) {
-    // No chop this week — hide card
-    card.style.display = 'none';
-    return;
-  }
-
-  // Compute context: how many managers were close calls (within some margin)?
-  const CLOSE_MARGIN = 5;
-  const alive = managers.filter(m => !m.eliminated_week || m.eliminated_week > state.week);
-  const choppedScore = chopped.score ?? chopped.points ?? 0;
-
-  // Managers who scored within CLOSE_MARGIN points above the chopped manager
-  const closeCalls = alive.filter(m => {
-    const s = m.score ?? m.points ?? 0;
-    return s > choppedScore && s - choppedScore <= CLOSE_MARGIN;
-  });
-
-  // Second-lowest alive score for chop differential
-  const aliveScores = alive
-    .map(m => m.score ?? m.points ?? 0)
-    .sort((a, b) => a - b);
-  const secondLowest = aliveScores.length > 0 ? aliveScores[0] : null;
-  const chopDiff = secondLowest !== null ? (secondLowest - choppedScore).toFixed(1) : null;
-
-  // Median score of all managers this week
-  const allScores = managers.map(m => m.score ?? m.points ?? 0).sort((a, b) => a - b);
-  const mid = Math.floor(allScores.length / 2);
-  const median = allScores.length % 2 === 0
-    ? ((allScores[mid - 1] + allScores[mid]) / 2).toFixed(1)
-    : allScores[mid].toFixed(1);
-  const highScore = Math.max(...allScores).toFixed(1);
-
-  // Build card
-  card.style.display = '';
-  els.elimLabel.innerHTML = `${skullIcon(14)} WEEK ${state.week} — THE BLADE FALLS`;
-  els.elimHeadline.textContent = `${chopped.name} eliminated at ${choppedScore.toFixed ? choppedScore.toFixed(1) : choppedScore}`;
-
-  if (closeCalls.length > 0) {
-    els.elimContext.textContent = `${closeCalls.length} manager${closeCalls.length > 1 ? 's' : ''} within ${CLOSE_MARGIN} pts of the chop`;
-  } else if (chopDiff !== null) {
-    els.elimContext.textContent = `Survived by ${chopDiff} pts`;
-  } else {
-    els.elimContext.textContent = '';
-  }
-
-  // Stat pills
-  const aliveCount = managers.filter(m => !m.eliminated_week || m.eliminated_week > state.week).length;
-  els.elimStats.innerHTML = `
-    <span class="stat-pill stat-pill--red">Chop ${choppedScore.toFixed ? choppedScore.toFixed(1) : choppedScore}</span>
-    <span class="stat-pill">Median ${median}</span>
-    <span class="stat-pill stat-pill--green">High ${highScore}</span>
-    <span class="stat-pill stat-pill--green">${aliveCount} Alive</span>
-  `;
 }
 
 /**
