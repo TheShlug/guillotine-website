@@ -79,6 +79,9 @@
 
   /* Focus ring */
   --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-accent);
+
+  /* Typography */
+  --font-heading: 'Oswald', sans-serif;
 }
 
 /* Reset & Base */
@@ -104,6 +107,13 @@ body {
   background-image:
     radial-gradient(ellipse at top, rgba(220, 38, 38, 0.06) 0%, transparent 60%),
     radial-gradient(ellipse at bottom right, rgba(251, 191, 36, 0.03) 0%, transparent 50%);
+}
+
+/* Heading Typography */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Accessibility - Focus states */
@@ -492,42 +502,36 @@ body {
   }
 }
 
-/* Top Navigation Dropdown */
-.top-nav-dropdown {
+/* Page Navigation Links */
+.page-nav {
   display: flex;
   justify-content: center;
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  flex-wrap: wrap;
 }
 
-.page-nav-select {
-  padding: 12px 40px 12px 16px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  font-weight: 600;
-  color: var(--color-text);
+.page-nav-link {
+  font-family: var(--font-heading, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.page-nav-link:hover {
+  color: var(--color-text-primary);
   background: var(--color-bg-card);
-  border: 2px solid var(--color-accent);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  min-width: 200px;
-  transition: all var(--transition-fast);
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  box-shadow: 0 0 12px var(--color-accent-glow);
 }
 
-.page-nav-select:hover {
-  border-color: var(--color-accent-light);
-  background-color: var(--color-bg-elevated);
-  box-shadow: 0 0 20px var(--color-accent-glow);
-}
-
-.page-nav-select:focus {
-  outline: none;
-  border-color: var(--color-accent-light);
-  box-shadow: 0 0 0 3px var(--color-accent-glow), 0 0 20px var(--color-accent-glow);
+.page-nav-link.active {
+  color: var(--color-accent-light);
+  background: rgba(220, 38, 38, 0.1);
 }
 
 /* Info Cards Section */

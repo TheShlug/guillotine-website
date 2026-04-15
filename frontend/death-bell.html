@@ -8,7 +8,7 @@
   <title>Death Bell - The Guillotine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
   <style>
@@ -220,24 +220,6 @@
       letter-spacing: 0.05em;
     }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      color: var(--color-text-secondary);
-      text-decoration: none;
-      font-weight: 500;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: var(--radius-sm);
-      transition: all var(--transition-fast);
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .back-link:hover {
-      color: var(--color-accent-light);
-      background: var(--color-bg-card);
-    }
-
     .loading-state, .error-state {
       text-align: center;
       padding: var(--spacing-2xl);
@@ -269,26 +251,15 @@
 </head>
 <body>
   <div class="app-container death-bell-page">
-    <a href="/" class="back-link">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      Back to Standings
-    </a>
-
-    <!-- Page Navigation Dropdown -->
-    <div class="top-nav-dropdown">
-      <select id="page-nav" class="page-nav-select" onchange="if(this.value) window.location.href=this.value">
-        <option value="" disabled>Go to page...</option>
-        <option value="/">Home - Standings</option>
-        <option value="/rules">League Rules</option>
-        <option value="/average-finishes">Historical Stats</option>
-        <option value="/draft-order">Draft Order</option>
-        <option value="/transactions">Transactions</option>
-        <option value="/death-bell" selected>Death Bell</option>
-        <option value="/season-recap">Season Recap</option>
-      </select>
-    </div>
+    <nav class="page-nav">
+      <a href="/" class="page-nav-link">Standings</a>
+      <a href="/rules" class="page-nav-link">Rules</a>
+      <a href="/average-finishes" class="page-nav-link">Stats</a>
+      <a href="/draft-order" class="page-nav-link">Draft</a>
+      <a href="/transactions" class="page-nav-link">Transactions</a>
+      <a href="/death-bell" class="page-nav-link active">Death Bell</a>
+      <a href="/season-recap" class="page-nav-link">Recap</a>
+    </nav>
 
     <div class="page-hero">
       <span class="skull">&#x1F480;</span>

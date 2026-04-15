@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Fonts & Styles -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/table.css">
 
@@ -51,57 +51,16 @@
       </div>
     </div>
 
-    <!-- Top Navigation Dropdown -->
-    <div class="top-nav-dropdown">
-      <select id="page-nav" class="page-nav-select">
-        <option value="" disabled selected>Go to page...</option>
-        <option value="/rules">League Rules</option>
-        <option value="/average-finishes">Historical Stats</option>
-        <option value="/draft-order">Draft Order</option>
-        <option value="/transactions">Transactions</option>
-        <option value="/death-bell">Death Bell</option>
-        <option value="/season-recap">Season Recap</option>
-      </select>
-    </div>
-
-    <!-- League Info Cards -->
-    <section class="info-cards">
-      <div class="info-card prize-card">
-        <div class="card-icon">&#x1F3C6;</div>
-        <h3>Prize Pool</h3>
-        <div class="prize-breakdown">
-          <div class="prize-item gold">
-            <span class="place">1st</span>
-            <span class="amount">$700</span>
-          </div>
-          <div class="prize-item silver">
-            <span class="place">2nd</span>
-            <span class="amount">$150</span>
-          </div>
-          <div class="prize-item bronze">
-            <span class="place">3rd</span>
-            <span class="amount">$50</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="info-card rules-card">
-        <div class="card-icon">&#x1F4CB;</div>
-        <h3>League Rules</h3>
-        <ul class="rules-list">
-          <li><strong>Waivers:</strong> Wednesday, 8PM EST</li>
-          <li><strong>Bench Expansion:</strong> After weeks 4 & 8</li>
-          <li><strong>Final Chop:</strong> Week 13 elimination</li>
-        </ul>
-        <a href="/rules" class="rules-link">View Full Rules &rarr;</a>
-      </div>
-
-      <div class="info-card chop-card">
-        <div class="card-icon">&#x2620;</div>
-        <h3>Chop Rules</h3>
-        <p>Players on teams eliminated from weeks 14+ are <strong>not available</strong> in free agency. Waivers continue through week 17.</p>
-      </div>
-    </section>
+    <!-- Page Navigation -->
+    <nav class="page-nav">
+      <a href="/" class="page-nav-link active">Standings</a>
+      <a href="/rules" class="page-nav-link">Rules</a>
+      <a href="/average-finishes" class="page-nav-link">Stats</a>
+      <a href="/draft-order" class="page-nav-link">Draft</a>
+      <a href="/transactions" class="page-nav-link">Transactions</a>
+      <a href="/death-bell" class="page-nav-link">Death Bell</a>
+      <a href="/season-recap" class="page-nav-link">Recap</a>
+    </nav>
 
     <!-- Mobile View Toggle (only visible on mobile) -->
     <div class="mobile-view-toggle" id="mobile-view-toggle">
@@ -153,6 +112,45 @@
         </div>
       </div>
     </div>
+
+    <!-- League Info Cards -->
+    <section class="info-cards">
+      <div class="info-card prize-card">
+        <div class="card-icon">&#x1F3C6;</div>
+        <h3>Prize Pool</h3>
+        <div class="prize-breakdown">
+          <div class="prize-item gold">
+            <span class="place">1st</span>
+            <span class="amount">$700</span>
+          </div>
+          <div class="prize-item silver">
+            <span class="place">2nd</span>
+            <span class="amount">$150</span>
+          </div>
+          <div class="prize-item bronze">
+            <span class="place">3rd</span>
+            <span class="amount">$50</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card rules-card">
+        <div class="card-icon">&#x1F4CB;</div>
+        <h3>League Rules</h3>
+        <ul class="rules-list">
+          <li><strong>Waivers:</strong> Wednesday, 8PM EST</li>
+          <li><strong>Bench Expansion:</strong> After weeks 4 & 8</li>
+          <li><strong>Final Chop:</strong> Week 13 elimination</li>
+        </ul>
+        <a href="/rules" class="rules-link">View Full Rules &rarr;</a>
+      </div>
+
+      <div class="info-card chop-card">
+        <div class="card-icon">&#x2620;</div>
+        <h3>Chop Rules</h3>
+        <p>Players on teams eliminated from weeks 14+ are <strong>not available</strong> in free agency. Waivers continue through week 17.</p>
+      </div>
+    </section>
 
     <!-- Footer -->
     <footer class="footer">

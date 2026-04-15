@@ -25,7 +25,6 @@ let tableSection;
 let loadingOverlay;
 let tableHeaderBar;
 let mobileViewToggle;
-let pageNavSelect;
 let championBanner;
 let championName;
 
@@ -42,7 +41,6 @@ async function init() {
   loadingOverlay = document.getElementById('loading');
   tableHeaderBar = document.getElementById('table-header-bar');
   mobileViewToggle = document.getElementById('mobile-view-toggle');
-  pageNavSelect = document.getElementById('page-nav');
   championBanner = document.getElementById('champion-banner');
   championName = document.getElementById('champion-name');
 
@@ -198,16 +196,6 @@ function setupEventListeners() {
           document.body.classList.add('mobile-minimal');
         }
         // 'default' view doesn't need a class - shows full table
-      }
-    });
-  }
-
-  // Page navigation dropdown
-  if (pageNavSelect) {
-    pageNavSelect.addEventListener('change', (e) => {
-      const url = e.target.value;
-      if (url) {
-        window.location.href = url;
       }
     });
   }
