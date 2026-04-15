@@ -6,8 +6,9 @@
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#dc2626">
   <title>Page Not Found - The Guillotine</title>
-  <link rel="stylesheet" href="/css/design-system.css">
-  <link rel="stylesheet" href="/css/nav.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
   <style>
@@ -73,23 +74,6 @@
   </style>
 </head>
 <body>
-<nav class="top-nav" id="top-nav">
-  <div class="nav-logo"><a href="/">The Guillotine</a></div>
-  <div class="nav-desktop-links"></div>
-  <div class="nav-right">
-    <select class="nav-season-select" id="season-select" aria-label="Season"></select>
-    <button class="nav-hamburger" aria-label="Open menu"></button>
-  </div>
-</nav>
-<div class="nav-menu-overlay" id="nav-menu-overlay">
-  <div class="nav-menu-header">
-    <span class="nav-logo">The Guillotine</span>
-    <button class="nav-menu-close" aria-label="Close menu"></button>
-  </div>
-  <div class="nav-menu-links"></div>
-</div>
-
-  <div class="page-container">
   <div class="app-container">
     <div class="error-page">
       <div class="error-icon">&#x1FA93;</div>
@@ -106,23 +90,6 @@
         Back to Standings
       </a>
     </div>
-    <footer class="site-footer">
-      <div class="footer-grid">
-        <a href="/" class="footer-link">Standings</a>
-        <a href="/rules" class="footer-link">Rules</a>
-        <a href="/average-finishes" class="footer-link">Historical Stats</a>
-        <a href="/draft-order" class="footer-link">Draft Order</a>
-        <a href="/transactions" class="footer-link">Transactions</a>
-        <a href="/death-bell" class="footer-link">Death Bell</a>
-        <a href="/season-recap" class="footer-link">Season Recap</a>
-      </div>
-      <p class="footer-credit">Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a></p>
-    </footer>
   </div>
-  </div>
-<script type="module">
-  import { initNav } from '/js/nav.js';
-  document.addEventListener('DOMContentLoaded', () => initNav());
-</script>
 </body>
 </html>

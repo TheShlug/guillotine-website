@@ -13,125 +13,206 @@
 
   <title>The Guillotine - Fantasy Football League</title>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="/css/design-system.css">
-  <link rel="stylesheet" href="/css/nav.css">
-  <link rel="stylesheet" href="/css/table-new.css">
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Fonts & Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/table.css">
 
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#x1FA93;</text></svg>">
 </head>
 <body>
-
-  <!-- Sticky Nav -->
-  <nav class="top-nav" id="top-nav">
-    <div class="nav-logo">
-      <a href="/">The Guillotine</a>
-    </div>
-    <div class="nav-desktop-links"></div>
-    <div class="nav-right">
-      <select class="nav-season-select" id="season-select"></select>
-      <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- Mobile Menu Overlay -->
-  <div class="nav-menu-overlay" id="nav-menu-overlay">
-    <div class="nav-menu-header">
-      <span class="nav-menu-logo">The Guillotine</span>
-      <button class="nav-menu-close" id="nav-menu-close" aria-label="Close menu">&times;</button>
-    </div>
-    <div class="nav-menu-links"></div>
-  </div>
-
-  <!-- Page Container -->
-  <div class="page-container">
-
-    <!-- Elimination Summary Card -->
-    <div class="elimination-card card" id="elimination-card" style="display:none;">
-      <label class="elim-label" id="elim-label"></label>
-      <div class="elim-headline" id="elim-headline"></div>
-      <div class="elim-context" id="elim-context"></div>
-      <div class="elim-stats" id="elim-stats"></div>
-    </div>
-
-    <!-- Controls Bar -->
-    <div class="controls-bar" id="controls-bar">
-      <div class="week-nav">
-        <button id="week-prev">&larr;</button>
-        <span id="week-label"></span>
-        <button id="week-next">&rarr;</button>
+  <div class="app-container">
+    <!-- Hero Header -->
+    <header class="hero">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="emoji">&#x1FA93;</span>
+          <span class="title-text">The Guillotine</span>
+          <span class="emoji">&#x1FA93;</span>
+        </h1>
+        <p class="hero-subtitle">Fantasy Football League</p>
       </div>
-      <div class="controls-right">
-        <div id="view-toggles">
-          <button class="active" data-view="full">Full</button>
-          <button data-view="minimal">Minimal</button>
-          <button data-view="compact">Compact</button>
-        </div>
-        <button id="export-btn">Export</button>
+    </header>
+
+    <!-- Champion Banner (populated by JS) -->
+    <div class="champion-banner" id="champion-banner" style="display: none;">
+      <div class="champion-banner-content">
+        <span class="champion-trophy">&#x1F3C6;</span>
+        <span class="champion-text">
+          <span class="champion-label">Reigning Champion</span>
+          <span class="champion-name" id="champion-name"></span>
+        </span>
+        <span class="champion-trophy">&#x1F3C6;</span>
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div class="loading-overlay" id="loading" style="display:none;">
-      Loading...
+    <!-- Top Navigation Dropdown -->
+    <div class="top-nav-dropdown">
+      <select id="page-nav" class="page-nav-select">
+        <option value="" disabled selected>Go to page...</option>
+        <option value="/rules">League Rules</option>
+        <option value="/average-finishes">Historical Stats</option>
+        <option value="/draft-order">Draft Order</option>
+        <option value="/transactions">Transactions</option>
+        <option value="/death-bell">Death Bell</option>
+        <option value="/season-recap">Season Recap</option>
+      </select>
     </div>
 
-    <!-- Table Section -->
-    <div class="table-section" id="table-section">
-      <div class="table-wrapper">
-        <div class="table-container" id="table-container"></div>
-      </div>
-    </div>
-
-    <!-- Info Cards -->
+    <!-- League Info Cards -->
     <section class="info-cards">
-      <div class="card">
-        <h4>Prize Pool</h4>
-        <ul class="prize-list">
-          <li class="prize-item gold"><span class="place">1st</span><span class="amount">$700</span></li>
-          <li class="prize-item silver"><span class="place">2nd</span><span class="amount">$150</span></li>
-          <li class="prize-item bronze"><span class="place">3rd</span><span class="amount">$50</span></li>
-        </ul>
+      <div class="info-card prize-card">
+        <div class="card-icon">&#x1F3C6;</div>
+        <h3>Prize Pool</h3>
+        <div class="prize-breakdown">
+          <div class="prize-item gold">
+            <span class="place">1st</span>
+            <span class="amount">$700</span>
+          </div>
+          <div class="prize-item silver">
+            <span class="place">2nd</span>
+            <span class="amount">$150</span>
+          </div>
+          <div class="prize-item bronze">
+            <span class="place">3rd</span>
+            <span class="amount">$50</span>
+          </div>
+        </div>
       </div>
 
-      <div class="card">
-        <h4>League Rules</h4>
-        <ul>
+      <div class="info-card rules-card">
+        <div class="card-icon">&#x1F4CB;</div>
+        <h3>League Rules</h3>
+        <ul class="rules-list">
           <li><strong>Waivers:</strong> Wednesday, 8PM EST</li>
-          <li><strong>Bench Expansion:</strong> After weeks 4 &amp; 8</li>
+          <li><strong>Bench Expansion:</strong> After weeks 4 & 8</li>
           <li><strong>Final Chop:</strong> Week 13 elimination</li>
         </ul>
-        <a href="/rules">View Full Rules &rarr;</a>
+        <a href="/rules" class="rules-link">View Full Rules &rarr;</a>
       </div>
 
-      <div class="card">
-        <h4>Chop Rules</h4>
+      <div class="info-card chop-card">
+        <div class="card-icon">&#x2620;</div>
+        <h3>Chop Rules</h3>
         <p>Players on teams eliminated from weeks 14+ are <strong>not available</strong> in free agency. Waivers continue through week 17.</p>
       </div>
     </section>
 
-  </div><!-- /.page-container -->
+    <!-- Mobile View Toggle (only visible on mobile) -->
+    <div class="mobile-view-toggle" id="mobile-view-toggle">
+      <span class="toggle-label">View:</span>
+      <button class="toggle-btn active" data-view="default">Full</button>
+      <button class="toggle-btn" data-view="minimal">Minimal</button>
+      <button class="toggle-btn" data-view="compact">Heatmap</button>
+    </div>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-grid">
-      <a href="/rules">Rules</a>
-      <a href="/average-finishes">Historical Stats</a>
-      <a href="/draft-order">Draft Order</a>
-      <a href="/transactions">Transactions</a>
-      <a href="/death-bell">Death Bell</a>
-      <a href="/season-recap">Season Recap</a>
+    <!-- Season Navigation -->
+    <nav class="season-nav">
+      <div class="season-tabs" id="season-tabs" role="tablist">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="nav-controls">
+        <div class="week-control">
+          <label for="week-selector">Week</label>
+          <select id="week-selector" class="week-select">
+            <!-- Populated by JavaScript -->
+          </select>
+        </div>
+        <button id="export-btn" class="btn btn-export" title="Export as PNG">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7,10 12,15 17,10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Export</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div class="loading-overlay" id="loading">
+      <div class="loader">
+        <div class="axe-spinner">&#x1FA93;</div>
+        <p>Loading league data...</p>
+      </div>
     </div>
-    <div class="footer-credit">
-      Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+
+    <!-- Main Table -->
+    <div class="table-section" id="table-section">
+      <div class="table-header-bar" id="table-header-bar">
+        <!-- Season info populated by JS -->
+      </div>
+      <div class="table-wrapper">
+        <div class="table-container" id="table-container">
+          <!-- Table rendered by JavaScript -->
+        </div>
+      </div>
     </div>
-  </footer>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="/rules" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          League Rules
+        </a>
+        <a href="/average-finishes" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"/>
+            <path d="M18 20V4"/>
+            <path d="M6 20v-4"/>
+          </svg>
+          Historical Stats
+        </a>
+        <a href="/draft-order" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 3l7 7"/>
+            <path d="M21 14v7h-5"/>
+            <path d="M3 14v7h5"/>
+            <path d="M14 21l7-7"/>
+            <path d="M10 21l-7-7"/>
+          </svg>
+          Draft Order
+        </a>
+        <a href="/transactions" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          Transactions
+        </a>
+        <a href="/death-bell" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M3 21h18M7 13v8M17 13v8M12 13v8"/>
+          </svg>
+          Death Bell
+        </a>
+        <a href="/season-recap" class="footer-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Season Recap
+        </a>
+      </div>
+      <p class="footer-note">
+        Data powered by <a href="https://sleeper.app" target="_blank" rel="noopener">Sleeper</a>
+      </p>
+    </footer>
+  </div>
 
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <script type="module" src="/js/app.js"></script>
