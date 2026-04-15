@@ -302,6 +302,29 @@
   </div>
 
   <script type="module">
+    function generateSparkline(weeklyScores, width = 120, height = 30) {
+      const scores = Object.entries(weeklyScores)
+        .filter(([, v]) => v != null)
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .map(([, v]) => v);
+
+      if (scores.length < 2) return '';
+
+      const min = Math.min(...scores);
+      const max = Math.max(...scores);
+      const range = max - min || 1;
+
+      const points = scores.map((s, i) => {
+        const x = (i / (scores.length - 1)) * width;
+        const y = height - ((s - min) / range) * (height - 4) - 2;
+        return `${x},${y}`;
+      });
+
+      return `<svg class="sparkline" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <polyline points="${points.join(' ')}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    }
+
     async function loadProfile() {
       const container = document.getElementById('profile-container');
 
@@ -365,6 +388,8 @@
            season.finish_position === 3 ? '3rd' :
            `${season.finish_position}th`) : '-';
 
+        const sparkline = season.weekly_scores ? generateSparkline(season.weekly_scores) : '';
+
         seasonHistory += `
           <div class="season-card">
             <div class="season-year">${seasonYear}</div>
@@ -393,6 +418,12 @@
                 <div class="season-detail">
                   <span class="label">Close Calls</span>
                   <span class="value">${season.close_calls}</span>
+                </div>
+              ` : ''}
+              ${sparkline ? `
+                <div class="season-detail">
+                  <span class="label">Score Trend</span>
+                  ${sparkline}
                 </div>
               ` : ''}
             </div>
