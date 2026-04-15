@@ -359,33 +359,33 @@ export function renderTable(data, container) {
       row.classList.add('summary-row-first');
     }
 
-    // Empty fixed columns — NO na-cell class so they inherit the summary row background color
+    // Empty fixed columns — use na-cell so summary row color selectors skip them
     const draftEmpty = document.createElement('td');
-    draftEmpty.className = 'col-draft';
+    draftEmpty.className = 'col-draft na-cell';
     row.appendChild(draftEmpty);
 
     const avgEmpty = document.createElement('td');
-    avgEmpty.className = 'col-avg';
+    avgEmpty.className = 'col-avg na-cell';
     row.appendChild(avgEmpty);
 
     const faabEmpty = document.createElement('td');
-    faabEmpty.className = 'col-faab';
+    faabEmpty.className = 'col-faab na-cell';
     row.appendChild(faabEmpty);
 
     if (hasFaabWasted) {
       const cell = document.createElement('td');
-      cell.className = 'col-faab-wasted';
+      cell.className = 'col-faab-wasted na-cell';
       row.appendChild(cell);
     }
 
     if (hasCloseCalls) {
       const cell = document.createElement('td');
-      cell.className = 'col-close-calls';
+      cell.className = 'col-close-calls na-cell';
       row.appendChild(cell);
     }
 
     const chopEmpty = document.createElement('td');
-    chopEmpty.className = 'col-chop';
+    chopEmpty.className = 'col-chop na-cell';
     row.appendChild(chopEmpty);
 
     // Summary label

@@ -491,6 +491,12 @@
 
 /* OPTION 1: Sticky Manager Column (Default Mobile Experience) */
 @media (max-width: 640px) {
+  /* Strip table chrome on mobile — no rounded corners, no shadow, no contrast box */
+  .guillotine-table {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
   /* Make the table wrapper handle horizontal scroll */
   .table-wrapper {
     position: relative;
