@@ -326,13 +326,13 @@ function updateTableHeader(data) {
   const { season, champion, current_week } = data;
   const displayWeek = current_week || 17;
 
-  let headerContent = `<span>Season ${season}</span>`;
+  let headerContent = `<span class="header-bar-title">Season ${season}`;
 
   if (champion) {
-    headerContent += ` <span style="margin-left: 1rem; opacity: 0.9;">Champion: ${champion}</span>`;
+    headerContent += `<span class="header-bar-champion">Champion: ${champion}</span>`;
   }
 
-  headerContent += `<span style="float: right;">Showing Week ${displayWeek}</span>`;
+  headerContent += `</span><span class="header-bar-week">Showing Week ${displayWeek}</span>`;
 
   tableHeaderBar.innerHTML = headerContent;
 
