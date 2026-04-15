@@ -301,11 +301,14 @@
     <nav class="page-nav">
       <a href="/" class="page-nav-link">Standings</a>
       <a href="/rules" class="page-nav-link">Rules</a>
-      <a href="/average-finishes" class="page-nav-link">Stats</a>
+      <a href="/average-finishes" class="page-nav-link">Managers</a>
       <a href="/draft-order" class="page-nav-link">Draft</a>
       <a href="/transactions" class="page-nav-link">Transactions</a>
       <a href="/death-bell" class="page-nav-link">Death Bell</a>
       <a href="/season-recap" class="page-nav-link active">Recap</a>
+      <select class="page-season-select" id="page-season-select" aria-label="Season">
+        <!-- populated by JS -->
+      </select>
     </nav>
 
     <div class="page-hero">
@@ -408,6 +411,22 @@
       } else {
         currentSeason = seasons[0];
       }
+
+      // Populate the nav dropdown
+      const pageSeasonSelect = document.getElementById('page-season-select');
+      if (pageSeasonSelect) {
+        seasons.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s + ' Season';
+          pageSeasonSelect.appendChild(opt);
+        });
+        pageSeasonSelect.value = currentSeason;
+        pageSeasonSelect.addEventListener('change', () => {
+          selectSeason(Number(pageSeasonSelect.value));
+        });
+      }
+
       loadRecap(currentSeason);
 
       // Listen for season changes from other tabs/pages
@@ -434,6 +453,8 @@
       document.querySelectorAll('.season-btn').forEach(btn => {
         btn.classList.toggle('active', parseInt(btn.dataset.season) === season);
       });
+      const pageSeasonSelect = document.getElementById('page-season-select');
+      if (pageSeasonSelect) pageSeasonSelect.value = season;
     }
 
     async function loadRecap(season) {
