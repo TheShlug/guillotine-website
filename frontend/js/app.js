@@ -7,7 +7,7 @@
 import { fetchAvailableSeasons, fetchSeasonData, fetchCurrentWeek } from './api.js';
 import { renderTable, exportToPNG } from './table-renderer-new.js';
 import { initNav } from './nav.js';
-import { skullIcon, trophyIcon, bloodDripDivider } from './svg-icons.js';
+import { skullIcon, trophyIcon } from './svg-icons.js';
 import { getSelectedSeason, setSelectedSeason } from './season-state.js';
 
 // ---------------------------------------------------------------------------
@@ -213,13 +213,7 @@ async function loadWeek() {
     updateEliminationCard();
     renderTable(state.data, els.tableContainer);
 
-    // Inject blood drip divider between table section and info cards (once)
-    if (!document.querySelector('.section-divider')) {
-      const d = document.createElement('div');
-      d.className = 'section-divider';
-      d.innerHTML = bloodDripDivider();
-      document.getElementById('table-section').after(d);
-    }
+
   } catch (err) {
     console.error('[app.js] loadWeek() failed:', err);
     els.tableContainer.innerHTML = `

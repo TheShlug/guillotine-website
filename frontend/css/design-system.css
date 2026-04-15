@@ -161,6 +161,8 @@ button {
 
 select {
   font-family: inherit;
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
 }
 
 table {

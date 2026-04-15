@@ -5,6 +5,7 @@
  */
 
 import { hamburgerIcon, closeIcon } from './svg-icons.js';
+import { getSelectedSeason, setSelectedSeason } from './season-state.js';
 
 /** All site pages in display order */
 export const NAV_LINKS = [
@@ -47,7 +48,7 @@ function isActive(href, pathname) {
  * @param {string} [options.activePath]  - Override pathname for active detection
  *                                         (defaults to window.location.pathname)
  */
-export function initNav(options = {}) {
+export async function initNav(options = {}) {
   /* ---- Resolve root element ---- */
   const topNav = document.getElementById('top-nav');
   if (!topNav) {
@@ -180,4 +181,31 @@ export function initNav(options = {}) {
       if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
     }
   });
+
+  /* ---- Season selector (shared across all pages) ---- */
+  const seasonSelect = document.getElementById('season-select');
+  if (seasonSelect) {
+    try {
+      const resp = await fetch('/api/seasons');
+      const data = await resp.json();
+      const seasons = data.seasons || [];
+      seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s} Season</option>`).join('');
+
+      // Restore saved selection
+      const saved = getSelectedSeason();
+      if (saved && seasons.includes(Number(saved))) {
+        seasonSelect.value = saved;
+      } else {
+        seasonSelect.value = Math.max(...seasons);
+      }
+
+      seasonSelect.addEventListener('change', () => {
+        setSelectedSeason(Number(seasonSelect.value));
+        // Dispatch event for page-specific scripts to handle
+        window.dispatchEvent(new CustomEvent('navSeasonChanged', { detail: { season: Number(seasonSelect.value) } }));
+      });
+    } catch (e) {
+      console.warn('Could not load seasons for nav:', e);
+    }
+  }
 }
