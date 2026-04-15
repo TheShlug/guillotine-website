@@ -1,316 +1,223 @@
 /**
- * Main application entry point for Guillotine League website.
+ * app.js
+ * Main application controller for the Guillotine League standings page.
+ * Wires up the new nav, elimination card, week prev/next controls, and new table renderer.
  */
 
-import { fetchSeasonData, fetchCurrentWeek, fetchAvailableSeasons } from './api.js';
-import { renderTable, exportToPNG } from './table-renderer.js';
+import { fetchAvailableSeasons, fetchSeasonData, fetchCurrentWeek } from './api.js';
+import { renderTable, exportToPNG } from './table-renderer-new.js';
+import { initNav } from './nav.js';
+import { skullIcon, trophyIcon } from './svg-icons.js';
 import { getSelectedSeason, setSelectedSeason } from './season-state.js';
 
+// ---------------------------------------------------------------------------
 // Application state
+// ---------------------------------------------------------------------------
+
 const state = {
   seasons: [],
   season: null,
-  week: 17,
+  week: null,
+  maxWeek: 17,
   data: null,
   loading: false,
-  reigningChampion: null  // Cached reigning champion info
 };
 
-// DOM elements
-let seasonTabsContainer;
-let weekSelector;
-let exportButton;
-let tableContainer;
-let tableSection;
-let loadingOverlay;
-let tableHeaderBar;
-let mobileViewToggle;
-let pageNavSelect;
-let championBanner;
-let championName;
+// ---------------------------------------------------------------------------
+// Cached DOM references
+// ---------------------------------------------------------------------------
+
+let els = {};
 
 /**
- * Initialize the application
+ * Query all DOM elements once and store in the `els` object.
+ */
+function cacheDom() {
+  els.seasonSelect    = document.getElementById('season-select');
+  els.weekLabel       = document.getElementById('week-label');
+  els.weekPrev        = document.getElementById('week-prev');
+  els.weekNext        = document.getElementById('week-next');
+  els.exportBtn       = document.getElementById('export-btn');
+  els.tableContainer  = document.getElementById('table-container');
+  els.loading         = document.getElementById('loading');
+  els.tableSection    = document.getElementById('table-section');
+  els.eliminationCard = document.getElementById('elimination-card');
+  els.elimLabel       = document.getElementById('elim-label');
+  els.elimHeadline    = document.getElementById('elim-headline');
+  els.elimContext     = document.getElementById('elim-context');
+  els.elimStats       = document.getElementById('elim-stats');
+  els.viewToggles     = document.getElementById('view-toggles');
+}
+
+// ---------------------------------------------------------------------------
+// Initialisation
+// ---------------------------------------------------------------------------
+
+/**
+ * Main entry point — called on DOMContentLoaded.
  */
 async function init() {
-  // Get DOM elements
-  seasonTabsContainer = document.getElementById('season-tabs');
-  weekSelector = document.getElementById('week-selector');
-  exportButton = document.getElementById('export-btn');
-  tableContainer = document.getElementById('table-container');
-  tableSection = document.getElementById('table-section');
-  loadingOverlay = document.getElementById('loading');
-  tableHeaderBar = document.getElementById('table-header-bar');
-  mobileViewToggle = document.getElementById('mobile-view-toggle');
-  pageNavSelect = document.getElementById('page-nav');
-  championBanner = document.getElementById('champion-banner');
-  championName = document.getElementById('champion-name');
-
-  // Show loading state
-  setLoading(true);
+  cacheDom();
+  initNav();
 
   try {
-    // Fetch available seasons dynamically
+    // Fetch available seasons
     const seasonsData = await fetchAvailableSeasons();
-    state.seasons = seasonsData.seasons;
+    state.seasons = seasonsData.seasons || [];
 
-    // Use saved season from localStorage or default to most recent
+    // Populate the season-select dropdown
+    els.seasonSelect.innerHTML = '';
+    state.seasons.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = `${s} Season`;
+      els.seasonSelect.appendChild(opt);
+    });
+
+    // Determine initial season: localStorage preference or latest
     const savedSeason = getSelectedSeason();
-    if (savedSeason && state.seasons.includes(savedSeason)) {
-      state.season = savedSeason;
+    if (savedSeason && state.seasons.includes(Number(savedSeason))) {
+      state.season = Number(savedSeason);
     } else {
       state.season = state.seasons[state.seasons.length - 1];
-      setSelectedSeason(state.season);
     }
+    els.seasonSelect.value = state.season;
 
-    // Populate season tabs
-    populateSeasonTabs();
-
-    // Populate week selector
-    populateWeekSelector();
-
-    // Set up event listeners
-    setupEventListeners();
-
-    // Determine and cache the reigning champion (from most recent completed season)
-    await determineReigningChampion();
-
-    // Auto-detect current week for live seasons
-    if (seasonsData.live_seasons && seasonsData.live_seasons.includes(state.season)) {
-      try {
-        const currentWeek = await fetchCurrentWeek(state.season);
-        state.week = currentWeek;
-        weekSelector.value = currentWeek;
-      } catch (e) {
-        console.warn('Could not fetch current week, defaulting to 17');
-        state.week = 17;
-      }
+    setupListeners();
+    await loadSeason();
+  } catch (err) {
+    console.error('[app.js] init() failed:', err);
+    if (els.tableContainer) {
+      els.tableContainer.innerHTML = `
+        <div style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
+          <p>Failed to initialise the application.</p>
+          <p style="font-size: 0.875rem; margin-top: 0.5rem;">${err.message}</p>
+        </div>
+      `;
     }
-
-    // Load initial data
-    await loadSeasonData();
-  } catch (error) {
-    console.error('Failed to initialize:', error);
-    tableContainer.innerHTML = `
-      <div style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
-        <p>Failed to initialize the application.</p>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">${error.message}</p>
-      </div>
-    `;
     setLoading(false);
   }
 }
 
-/**
- * Populate season tabs dynamically
- */
-function populateSeasonTabs() {
-  seasonTabsContainer.innerHTML = '';
+// ---------------------------------------------------------------------------
+// Event listeners
+// ---------------------------------------------------------------------------
 
-  state.seasons.forEach(season => {
-    const button = document.createElement('button');
-    button.className = 'tab-btn';
-    button.dataset.season = season;
-    button.textContent = season;
-    button.setAttribute('role', 'tab');
-    button.setAttribute('aria-selected', season === state.season ? 'true' : 'false');
-
-    if (season === state.season) {
-      button.classList.add('active');
+function setupListeners() {
+  // Season dropdown
+  els.seasonSelect.addEventListener('change', async () => {
+    const newSeason = Number(els.seasonSelect.value);
+    if (newSeason !== state.season) {
+      state.season = newSeason;
+      setSelectedSeason(newSeason);
+      state.week = null; // reset so loadSeason picks up current week
+      await loadSeason();
     }
-
-    seasonTabsContainer.appendChild(button);
   });
-}
 
-/**
- * Populate the week selector dropdown
- */
-function populateWeekSelector() {
-  weekSelector.innerHTML = '';
-  for (let w = 1; w <= 17; w++) {
-    const option = document.createElement('option');
-    option.value = w;
-    option.textContent = `Week ${w}`;
-    weekSelector.appendChild(option);
-  }
-  weekSelector.value = state.week;
-}
+  // Week prev / next buttons
+  els.weekPrev.addEventListener('click', async () => {
+    if (state.week > 1) {
+      state.week -= 1;
+      await loadWeek();
+    }
+  });
 
-/**
- * Set up event listeners
- */
-function setupEventListeners() {
-  // Season tabs - use event delegation
-  seasonTabsContainer.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('tab-btn')) {
-      const season = parseInt(e.target.dataset.season);
-      if (season !== state.season) {
-        state.season = season;
-        setSelectedSeason(season); // Save to localStorage for universal state
-        updateActiveTab();
+  els.weekNext.addEventListener('click', async () => {
+    if (state.week < state.maxWeek) {
+      state.week += 1;
+      await loadWeek();
+    }
+  });
 
-        // Reset week for new season
-        state.week = 17;
-        weekSelector.value = state.week;
+  // View toggles — event delegation
+  if (els.viewToggles) {
+    els.viewToggles.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-view]');
+      if (!btn) return;
 
-        await loadSeasonData();
+      // Update active state
+      els.viewToggles.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Toggle body classes
+      const view = btn.dataset.view;
+      document.body.classList.remove('mobile-minimal', 'mobile-compact');
+      if (view === 'minimal') {
+        document.body.classList.add('mobile-minimal');
+      } else if (view === 'compact') {
+        document.body.classList.add('mobile-compact');
       }
-    }
-  });
+      // 'full' — no extra class needed
+    });
+  }
 
-  // Listen for season changes from other tabs/pages
+  // Export button
+  if (els.exportBtn) {
+    els.exportBtn.addEventListener('click', () => {
+      if (state.data && !state.loading) {
+        exportToPNG(els.tableContainer, state.season, state.week);
+      }
+    });
+  }
+
+  // Cross-tab season sync
   window.addEventListener('seasonChanged', async (e) => {
-    const newSeason = e.detail.season;
+    const newSeason = Number(e.detail.season);
     if (newSeason !== state.season && state.seasons.includes(newSeason)) {
       state.season = newSeason;
+      els.seasonSelect.value = newSeason;
+      state.week = null;
+      await loadSeason();
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Data loading
+// ---------------------------------------------------------------------------
+
+/**
+ * Load a season from scratch: detect current week, then render.
+ */
+async function loadSeason() {
+  setLoading(true);
+
+  // Try to fetch the current live week; fall back to 17 for historical seasons
+  try {
+    const weekNum = await fetchCurrentWeek(state.season);
+    if (state.week === null) {
+      state.week = (typeof weekNum === 'number' && weekNum > 0) ? weekNum : 17;
+    }
+  } catch (e) {
+    if (state.week === null) {
       state.week = 17;
-      weekSelector.value = state.week;
-      updateActiveTab();
-      await loadSeasonData();
     }
-  });
-
-  // Week selector
-  weekSelector.addEventListener('change', async (e) => {
-    state.week = parseInt(e.target.value);
-    await loadSeasonData();
-  });
-
-  // Mobile view toggle
-  if (mobileViewToggle) {
-    mobileViewToggle.addEventListener('click', (e) => {
-      if (e.target.classList.contains('toggle-btn')) {
-        const view = e.target.dataset.view;
-
-        // Update active button state
-        mobileViewToggle.querySelectorAll('.toggle-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.view === view);
-        });
-
-        // Update body class for view mode
-        document.body.classList.remove('mobile-cards', 'mobile-compact', 'mobile-minimal');
-        if (view === 'compact') {
-          document.body.classList.add('mobile-compact');
-        } else if (view === 'cards') {
-          document.body.classList.add('mobile-cards');
-        } else if (view === 'minimal') {
-          document.body.classList.add('mobile-minimal');
-        }
-        // 'default' view doesn't need a class - shows full table
-      }
-    });
   }
 
-  // Page navigation dropdown
-  if (pageNavSelect) {
-    pageNavSelect.addEventListener('change', (e) => {
-      const url = e.target.value;
-      if (url) {
-        window.location.href = url;
-      }
-    });
-  }
-
-  // Export button with visual feedback
-  exportButton.addEventListener('click', async () => {
-    if (state.data && !exportButton.disabled) {
-      // Show exporting state
-      const originalText = exportButton.innerHTML;
-      exportButton.disabled = true;
-      exportButton.innerHTML = `
-        <svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" stroke-dasharray="30 60"/>
-        </svg>
-        Exporting...
-      `;
-
-      try {
-        await exportToPNG(tableContainer, state.season, state.week);
-
-        // Show success state
-        exportButton.innerHTML = `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          Saved!
-        `;
-        exportButton.style.background = 'var(--color-score-high)';
-        exportButton.style.color = 'white';
-
-        // Reset after 2 seconds
-        setTimeout(() => {
-          exportButton.innerHTML = originalText;
-          exportButton.style.background = '';
-          exportButton.style.color = '';
-          exportButton.disabled = false;
-        }, 2000);
-      } catch (error) {
-        console.error('Export failed:', error);
-        exportButton.innerHTML = `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="15" y1="9" x2="9" y2="15"/>
-            <line x1="9" y1="9" x2="15" y2="15"/>
-          </svg>
-          Failed
-        `;
-        exportButton.style.background = 'var(--color-accent)';
-
-        setTimeout(() => {
-          exportButton.innerHTML = originalText;
-          exportButton.style.background = '';
-          exportButton.style.color = '';
-          exportButton.disabled = false;
-        }, 2000);
-      }
-    }
-  });
+  state.maxWeek = 17;
+  await loadWeek();
 }
 
 /**
- * Update active tab styling
+ * Fetch and render data for the current state.season / state.week.
  */
-function updateActiveTab() {
-  const tabs = seasonTabsContainer.querySelectorAll('.tab-btn');
-  tabs.forEach(btn => {
-    const season = parseInt(btn.dataset.season);
-    const isActive = season === state.season;
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  });
-}
-
-/**
- * Show/hide loading overlay
- */
-function setLoading(loading) {
-  state.loading = loading;
-  loadingOverlay.classList.toggle('visible', loading);
-  tableSection.style.display = loading ? 'none' : 'block';
-}
-
-/**
- * Load and render season data
- */
-async function loadSeasonData() {
+async function loadWeek() {
   setLoading(true);
 
   try {
     const data = await fetchSeasonData(state.season, state.week);
     state.data = data;
 
-    // Update table header bar
-    updateTableHeader(data);
-
-    // Render the table
-    renderTable(data, tableContainer);
-  } catch (error) {
-    console.error('Failed to load season data:', error);
-    tableContainer.innerHTML = `
+    updateWeekLabel();
+    updateEliminationCard();
+    renderTable(state.data, els.tableContainer);
+  } catch (err) {
+    console.error('[app.js] loadWeek() failed:', err);
+    els.tableContainer.innerHTML = `
       <div style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
-        <p>Failed to load data for season ${state.season}.</p>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">${error.message}</p>
+        <p>Failed to load data for Season ${state.season}, Week ${state.week}.</p>
+        <p style="font-size: 0.875rem; margin-top: 0.5rem;">${err.message}</p>
       </div>
     `;
   } finally {
@@ -318,69 +225,142 @@ async function loadSeasonData() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// UI updates
+// ---------------------------------------------------------------------------
+
 /**
- * Update table header bar with season info
+ * Update "Week X of 17" label and enable/disable prev/next buttons.
  */
-function updateTableHeader(data) {
-  const { season, champion, current_week } = data;
-  const displayWeek = current_week || 17;
+function updateWeekLabel() {
+  if (els.weekLabel) {
+    els.weekLabel.textContent = `Week ${state.week} of ${state.maxWeek}`;
+  }
+  if (els.weekPrev) {
+    els.weekPrev.disabled = state.week <= 1;
+  }
+  if (els.weekNext) {
+    els.weekNext.disabled = state.week >= state.maxWeek;
+  }
+}
 
-  let headerContent = `<span>Season ${season}</span>`;
+/**
+ * Build and display the elimination card based on current state.data.
+ */
+function updateEliminationCard() {
+  const card = els.eliminationCard;
+  if (!card) return;
 
+  const data = state.data;
+
+  // No data or no managers — hide card
+  if (!data || !data.managers || data.managers.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+
+  const { current_week, champion, managers, season } = data;
+
+  // Pre-season states — show season info
+  if (current_week === 0 || data.status === 'pre_draft' || data.status === 'drafting') {
+    card.style.display = '';
+    card.classList.remove('champion-card');
+    els.elimLabel.innerHTML = `Season ${season}`;
+    els.elimHeadline.textContent = 'Season not yet started';
+    els.elimContext.textContent = `${managers.length} managers registered`;
+    els.elimStats.innerHTML = '';
+    return;
+  }
+
+  // Completed season with a champion — champion spotlight
   if (champion) {
-    headerContent += ` <span style="margin-left: 1rem; opacity: 0.9;">Champion: ${champion}</span>`;
+    card.style.display = '';
+    card.classList.add('champion-card');
+    els.elimLabel.innerHTML = `${trophyIcon(14)} CHAMPION`;
+    els.elimHeadline.textContent = champion;
+    els.elimContext.textContent = `Season ${season} Champion`;
+    els.elimStats.innerHTML = '';
+    return;
   }
 
-  headerContent += `<span style="float: right;">Showing Week ${displayWeek}</span>`;
+  card.classList.remove('champion-card');
 
-  tableHeaderBar.innerHTML = headerContent;
+  // Find the manager chopped this week (eliminated == state.week)
+  const chopped = managers.find(m => m.eliminated_week === state.week);
 
-  // Update champion banner
-  updateChampionBanner(data);
-}
-
-/**
- * Determine the reigning champion from the most recent completed season.
- * Called once at init and cached in state.
- */
-async function determineReigningChampion() {
-  const allSeasons = [...state.seasons].sort((a, b) => a - b);
-
-  // Check seasons from newest to oldest to find the most recent with a champion
-  for (let i = allSeasons.length - 1; i >= 0; i--) {
-    const seasonYear = allSeasons[i];
-    try {
-      const seasonData = await fetchSeasonData(seasonYear, 17);
-      if (seasonData.champion) {
-        state.reigningChampion = {
-          name: seasonData.champion,
-          season: seasonYear
-        };
-        break;
-      }
-    } catch (e) {
-      // Season data not available, continue to next
-      continue;
-    }
+  if (!chopped) {
+    // No chop this week — hide card
+    card.style.display = 'none';
+    return;
   }
-}
 
-/**
- * Update the champion banner display.
- * Always shows the REIGNING champion (from the most recent completed season).
- * The reigning champ stays until the next season finishes.
- */
-function updateChampionBanner(data) {
-  // Always show the cached reigning champion, regardless of which season is being viewed
-  if (state.reigningChampion) {
-    championName.textContent = state.reigningChampion.name;
-    championBanner.style.display = 'block';
+  // Compute context: how many managers were close calls (within some margin)?
+  const CLOSE_MARGIN = 5;
+  const alive = managers.filter(m => !m.eliminated_week || m.eliminated_week > state.week);
+  const choppedScore = chopped.score ?? chopped.points ?? 0;
+
+  // Managers who scored within CLOSE_MARGIN points above the chopped manager
+  const closeCalls = alive.filter(m => {
+    const s = m.score ?? m.points ?? 0;
+    return s > choppedScore && s - choppedScore <= CLOSE_MARGIN;
+  });
+
+  // Second-lowest alive score for chop differential
+  const aliveScores = alive
+    .map(m => m.score ?? m.points ?? 0)
+    .sort((a, b) => a - b);
+  const secondLowest = aliveScores.length > 0 ? aliveScores[0] : null;
+  const chopDiff = secondLowest !== null ? (secondLowest - choppedScore).toFixed(1) : null;
+
+  // Median score of all managers this week
+  const allScores = managers.map(m => m.score ?? m.points ?? 0).sort((a, b) => a - b);
+  const mid = Math.floor(allScores.length / 2);
+  const median = allScores.length % 2 === 0
+    ? ((allScores[mid - 1] + allScores[mid]) / 2).toFixed(1)
+    : allScores[mid].toFixed(1);
+  const highScore = Math.max(...allScores).toFixed(1);
+
+  // Build card
+  card.style.display = '';
+  els.elimLabel.innerHTML = `${skullIcon(14)} WEEK ${state.week} — THE BLADE FALLS`;
+  els.elimHeadline.textContent = `${chopped.name} eliminated at ${choppedScore.toFixed ? choppedScore.toFixed(1) : choppedScore}`;
+
+  if (closeCalls.length > 0) {
+    els.elimContext.textContent = `${closeCalls.length} manager${closeCalls.length > 1 ? 's' : ''} within ${CLOSE_MARGIN} pts of the chop`;
+  } else if (chopDiff !== null) {
+    els.elimContext.textContent = `Survived by ${chopDiff} pts`;
   } else {
-    championBanner.style.display = 'none';
+    els.elimContext.textContent = '';
+  }
+
+  // Stat pills
+  const aliveCount = managers.filter(m => !m.eliminated_week || m.eliminated_week > state.week).length;
+  els.elimStats.innerHTML = `
+    <span class="stat-pill stat-pill--red">Chop ${choppedScore.toFixed ? choppedScore.toFixed(1) : choppedScore}</span>
+    <span class="stat-pill">Median ${median}</span>
+    <span class="stat-pill stat-pill--green">High ${highScore}</span>
+    <span class="stat-pill stat-pill--green">${aliveCount} Alive</span>
+  `;
+}
+
+/**
+ * Toggle loading overlay and dim the table section.
+ * @param {boolean} loading
+ */
+function setLoading(loading) {
+  state.loading = loading;
+  if (els.loading) {
+    els.loading.style.display = loading ? '' : 'none';
+  }
+  if (els.tableSection) {
+    els.tableSection.style.opacity = loading ? '0.4' : '';
   }
 }
 
-// Initialize when DOM is ready
+// ---------------------------------------------------------------------------
+// Bootstrap
+// ---------------------------------------------------------------------------
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
