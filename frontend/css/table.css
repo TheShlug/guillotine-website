@@ -425,6 +425,16 @@
   line-height: 1;
 }
 
+/* Close call indicator on score cells */
+.close-call-mark {
+  position: absolute;
+  bottom: 1px;
+  left: 2px;
+  font-size: 8px;
+  opacity: 0.7;
+  z-index: 1;
+}
+
 /* Responsive table */
 @media (max-width: 1200px) {
   .guillotine-table {

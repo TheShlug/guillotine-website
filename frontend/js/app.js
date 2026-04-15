@@ -27,6 +27,11 @@ let tableHeaderBar;
 let mobileViewToggle;
 let championBanner;
 let championName;
+let eliminationSummary;
+let elimWeek;
+let elimHeadline;
+let elimDetail;
+let elimStatsRow;
 
 /**
  * Initialize the application
@@ -43,6 +48,11 @@ async function init() {
   mobileViewToggle = document.getElementById('mobile-view-toggle');
   championBanner = document.getElementById('champion-banner');
   championName = document.getElementById('champion-name');
+  eliminationSummary = document.getElementById('elimination-summary');
+  elimWeek = document.getElementById('elim-week');
+  elimHeadline = document.getElementById('elim-headline');
+  elimDetail = document.getElementById('elim-detail');
+  elimStatsRow = document.getElementById('elim-stats-row');
 
   // Show loading state
   setLoading(true);
@@ -291,6 +301,9 @@ async function loadSeasonData() {
     // Update table header bar
     updateTableHeader(data);
 
+    // Update elimination summary card
+    updateEliminationSummary(data);
+
     // Render the table
     renderTable(data, tableContainer);
   } catch (error) {
@@ -366,6 +379,111 @@ function updateChampionBanner(data) {
   } else {
     championBanner.style.display = 'none';
   }
+}
+
+/**
+ * Update the elimination summary card based on current data and viewed week.
+ */
+function updateEliminationSummary(data) {
+  const { managers, weekly_stats, current_week, champion, status } = data;
+  const displayWeek = current_week || 17;
+  const viewWeek = state.week;
+
+  // Hide for pre-season
+  if (current_week === 0 || status === 'pre_draft' || status === 'drafting') {
+    eliminationSummary.style.display = 'none';
+    return;
+  }
+
+  // Check for champion spotlight on final week
+  const isCompletedSeason = managers.some(m => m.finish_position !== undefined && m.finish_position !== null);
+  if (champion && isCompletedSeason && viewWeek >= 17) {
+    eliminationSummary.style.display = '';
+    eliminationSummary.classList.add('champion');
+    elimWeek.textContent = `SEASON ${data.season} \u2014 CHAMPION`;
+    elimHeadline.textContent = `\u{1F3C6} ${champion} \u{1F3C6}`;
+    elimDetail.textContent = 'Last one standing. The Guillotine Champion.';
+    elimStatsRow.innerHTML = '';
+
+    const aliveCount = managers.filter(m => !m.chop_week).length;
+    const totalManagers = managers.length;
+    addStatPill(elimStatsRow, 'Survived', `${totalManagers - aliveCount} chops`);
+
+    // Find champion's best week
+    const champManager = managers.find(m => m.user_name === champion);
+    if (champManager) {
+      const scores = Object.values(champManager.weekly_scores).filter(s => s != null);
+      if (scores.length > 0) {
+        addStatPill(elimStatsRow, 'Best Score', Math.max(...scores).toFixed(1));
+      }
+    }
+    return;
+  }
+
+  // Find the manager chopped in the currently viewed week
+  const choppedManager = managers.find(m => m.chop_week === viewWeek);
+
+  if (!choppedManager) {
+    eliminationSummary.style.display = 'none';
+    eliminationSummary.classList.remove('champion');
+    return;
+  }
+
+  // Show the card
+  eliminationSummary.style.display = '';
+  eliminationSummary.classList.remove('champion');
+
+  const weekStr = String(viewWeek);
+  const score = choppedManager.weekly_scores[weekStr];
+  const weekData = weekly_stats[weekStr];
+
+  elimWeek.textContent = `WEEK ${viewWeek} \u2014 THE BLADE FALLS`;
+  elimHeadline.textContent = `${choppedManager.user_name} eliminated${score != null ? ` at ${score.toFixed(2)}` : ''}`;
+
+  // Detail with chop differential
+  if (weekData && weekData.chop_differential != null) {
+    elimDetail.textContent = `Lost by ${Math.abs(weekData.chop_differential).toFixed(2)} points.`;
+  } else {
+    elimDetail.textContent = '';
+  }
+
+  // Stat pills
+  elimStatsRow.innerHTML = '';
+  if (weekData) {
+    if (weekData.chop_score != null) {
+      addStatPill(elimStatsRow, 'Chop Score', weekData.chop_score.toFixed(1));
+    }
+    if (weekData.median != null) {
+      addStatPill(elimStatsRow, 'Median', weekData.median.toFixed(1));
+    }
+    if (weekData.high_score != null) {
+      addStatPill(elimStatsRow, 'High', weekData.high_score.toFixed(1));
+    }
+  }
+
+  // Alive count after this chop
+  const aliveAfter = managers.filter(m => !m.chop_week || m.chop_week > viewWeek).length;
+  addStatPill(elimStatsRow, 'Alive', String(aliveAfter));
+}
+
+/**
+ * Add a stat pill to the stats row element.
+ */
+function addStatPill(container, label, value) {
+  const item = document.createElement('div');
+  item.className = 'elim-stat-item';
+
+  const valEl = document.createElement('div');
+  valEl.className = 'elim-stat-value';
+  valEl.textContent = value;
+  item.appendChild(valEl);
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'elim-stat-label';
+  labelEl.textContent = label;
+  item.appendChild(labelEl);
+
+  container.appendChild(item);
 }
 
 // Initialize when DOM is ready

@@ -1,6 +1,7 @@
 /**
  * Table renderer for Guillotine League.
  * Generates the DOM table with proper styling and color gradients.
+ * Clean rebuild — all DOM via createElement, no innerHTML for table structure.
  */
 
 import { getScoreColor, getContrastTextColor, calculateWeekStats } from './color-utils.js';
@@ -13,35 +14,57 @@ import { getScoreColor, getContrastTextColor, calculateWeekStats } from './color
 export function renderTable(data, container) {
   const { season, managers, weekly_stats, current_week, champion, status } = data;
 
+  // Clear container completely before any rendering
+  container.innerHTML = '';
+
   // Handle pre-season state
   if (current_week === 0 || status === 'pre_draft' || status === 'drafting') {
-    container.innerHTML = '';
-
     const preSeason = document.createElement('div');
     preSeason.className = 'pre-season-message';
-    preSeason.innerHTML = `
-      <div class="season-info">
-        <span class="season-info-left">Season ${season}</span>
-        <span class="season-info-right">${status === 'drafting' ? 'Draft in Progress' : 'Pre-Draft'}</span>
-      </div>
-      <div class="pre-season-content">
-        <div class="pre-season-icon">&#x1FA93;</div>
-        <h2>Season ${season} Has Not Started Yet</h2>
-        <p>${status === 'drafting' ? 'The draft is currently in progress.' : 'The draft has not occurred yet.'}</p>
-        <p class="manager-count">${managers.length} managers registered</p>
-        <div class="manager-list">
-          ${managers.map(m => `<span class="manager-chip">${m.user_name}</span>`).join('')}
-        </div>
-      </div>
-    `;
+
+    const seasonInfo = buildSeasonInfoBanner(season, status === 'drafting' ? 'Draft in Progress' : 'Pre-Draft');
+    preSeason.appendChild(seasonInfo);
+
+    const content = document.createElement('div');
+    content.className = 'pre-season-content';
+
+    const icon = document.createElement('div');
+    icon.className = 'pre-season-icon';
+    icon.textContent = '\u{1FA93}';
+    content.appendChild(icon);
+
+    const heading = document.createElement('h2');
+    heading.textContent = `Season ${season} Has Not Started Yet`;
+    content.appendChild(heading);
+
+    const desc = document.createElement('p');
+    desc.textContent = status === 'drafting' ? 'The draft is currently in progress.' : 'The draft has not occurred yet.';
+    content.appendChild(desc);
+
+    const count = document.createElement('p');
+    count.className = 'manager-count';
+    count.textContent = `${managers.length} managers registered`;
+    content.appendChild(count);
+
+    const list = document.createElement('div');
+    list.className = 'manager-list';
+    managers.forEach(m => {
+      const chip = document.createElement('span');
+      chip.className = 'manager-chip';
+      chip.textContent = m.user_name;
+      list.appendChild(chip);
+    });
+    content.appendChild(list);
+
+    preSeason.appendChild(content);
     container.appendChild(preSeason);
     return;
   }
 
-  // Determine display week (use current_week for live seasons, 17 for historical)
+  // Determine display week
   const displayWeek = current_week || 17;
 
-  // Check if this is a completed season (has finish positions)
+  // Check if this is a completed season
   const isCompletedSeason = managers.some(m => m.finish_position !== undefined && m.finish_position !== null);
 
   // Pre-calculate week stats for color gradients
@@ -50,11 +73,10 @@ export function renderTable(data, container) {
     weekStatsCache[w] = calculateWeekStats(managers, w);
   }
 
-  // Pre-calculate rankings for each week (for rank display in cells)
+  // Pre-calculate rankings for each week
   const weekRankings = {};
   for (let w = 1; w <= displayWeek; w++) {
     const weekStr = String(w);
-    // Get all alive managers' scores for this week
     const weekScores = managers
       .filter(m => {
         const isAlive = !m.chop_week || m.chop_week >= w;
@@ -62,26 +84,25 @@ export function renderTable(data, container) {
         return isAlive && score !== null && score !== undefined;
       })
       .map(m => ({ userName: m.user_name, score: m.weekly_scores[weekStr] }))
-      .sort((a, b) => b.score - a.score);  // Sort descending (rank 1 = highest)
+      .sort((a, b) => b.score - a.score);
 
-    // Assign ranks
     weekRankings[w] = {};
     weekScores.forEach((item, index) => {
       weekRankings[w][item.userName] = index + 1;
     });
   }
 
-  // Create table
+  // Detect optional columns
+  const hasFaabWasted = managers.some(m => m.faab_wasted !== undefined);
+  const hasCloseCalls = managers.some(m => m.close_calls !== undefined);
+
+  // Build table
   const table = document.createElement('table');
   table.className = 'guillotine-table';
 
-  // Create header
+  // --- THEAD ---
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-
-  // Fixed columns - include FAAB wasted and close calls if available
-  const hasFaabWasted = managers.some(m => m.faab_wasted !== undefined);
-  const hasCloseCalls = managers.some(m => m.close_calls !== undefined);
 
   const fixedHeaders = [
     { label: 'Draft<br>Pos', className: 'col-draft' },
@@ -117,22 +138,19 @@ export function renderTable(data, container) {
     const th = document.createElement('th');
     th.className = 'col-week';
     th.textContent = `W${w}`;
-
-    // Add divider class after weeks 4 and 8
     if (w === 4 || w === 8) {
       th.classList.add('week-divider');
     }
-
     headerRow.appendChild(th);
   }
 
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
-  // Create body
+  // --- TBODY ---
   const tbody = document.createElement('tbody');
 
-  // Find the most recently chopped team (highest chop_week <= current)
+  // Find most recently chopped team
   const recentlyChopped = managers
     .filter(m => m.chop_week && m.chop_week <= displayWeek)
     .sort((a, b) => b.chop_week - a.chop_week)[0];
@@ -144,7 +162,6 @@ export function renderTable(data, container) {
       row.classList.add('eliminated');
     }
 
-    // Check if this is the most recently chopped team (for animation)
     const isRecentlyChopped = recentlyChopped &&
       manager.chop_week === recentlyChopped.chop_week &&
       manager.user_name === recentlyChopped.user_name;
@@ -172,7 +189,7 @@ export function renderTable(data, container) {
     }
     row.appendChild(faabCell);
 
-    // FAAB wasted (if available)
+    // FAAB wasted
     if (hasFaabWasted) {
       const faabWastedCell = document.createElement('td');
       faabWastedCell.className = 'col-faab-wasted faab-wasted-cell';
@@ -184,7 +201,7 @@ export function renderTable(data, container) {
       row.appendChild(faabWastedCell);
     }
 
-    // Close calls (if available)
+    // Close calls
     if (hasCloseCalls) {
       const closeCallsCell = document.createElement('td');
       closeCallsCell.className = 'col-close-calls';
@@ -204,7 +221,7 @@ export function renderTable(data, container) {
     chopCell.textContent = manager.chop_week || '-';
     row.appendChild(chopCell);
 
-    // Manager name with link to profile
+    // Manager name with link and badges
     const nameCell = document.createElement('td');
     nameCell.className = 'col-manager manager-cell';
 
@@ -214,10 +231,9 @@ export function renderTable(data, container) {
     nameLink.textContent = manager.user_name;
     nameCell.appendChild(nameLink);
 
-    // Add badges based on finish position or champion status
+    // Badges
     if (isCompletedSeason && manager.finish_position) {
       const badge = document.createElement('span');
-
       if (manager.finish_position === 1) {
         badge.className = 'badge champion-badge';
         badge.textContent = 'CHAMP';
@@ -228,29 +244,26 @@ export function renderTable(data, container) {
         badge.className = 'badge rank-badge third';
         badge.textContent = '3RD';
       }
-
       if (badge.className) {
         nameCell.appendChild(badge);
       }
     } else if (!manager.chop_week && champion === manager.user_name) {
-      // Fallback for historical data without finish_position
       const badge = document.createElement('span');
       badge.className = 'badge champion-badge';
       badge.textContent = 'CHAMP';
       nameCell.appendChild(badge);
     } else if (!manager.chop_week && !isCompletedSeason) {
-      // Survivor for current/live season
       const badge = document.createElement('span');
       badge.className = 'badge survivor-badge';
       badge.textContent = 'ALIVE';
       nameCell.appendChild(badge);
     }
 
-    // Add "CHOPPED" badge for recently eliminated team
+    // CHOPPED badge for recently eliminated
     if (isRecentlyChopped && displayWeek < 17) {
       const choppedBadge = document.createElement('span');
       choppedBadge.className = 'badge chopped-badge';
-      choppedBadge.innerHTML = '&#x1FA93; CHOP';
+      choppedBadge.textContent = '\u{1FA93} CHOP';
       nameCell.appendChild(choppedBadge);
       row.classList.add('recently-chopped');
     }
@@ -270,12 +283,21 @@ export function renderTable(data, container) {
       if (isFutureWeek || score === null || score === undefined || wasEliminated) {
         // NA cell
         cell.classList.add('na-cell');
-        cell.textContent = '';
       } else if (isChopWeek) {
-        // Chop week cell - dark red
+        // Chop week cell
         cell.classList.add('chop-cell');
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'score-value';
+        scoreSpan.textContent = score.toFixed(2);
+        cell.appendChild(scoreSpan);
+
         const rank = weekRankings[w]?.[manager.user_name];
-        cell.innerHTML = `<span class="score-value">${score.toFixed(2)}</span>${rank ? `<span class="score-rank">${rank}</span>` : ''}`;
+        if (rank) {
+          const rankSpan = document.createElement('span');
+          rankSpan.className = 'score-rank';
+          rankSpan.textContent = rank;
+          cell.appendChild(rankSpan);
+        }
       } else {
         // Normal score cell with gradient
         const stats = weekStatsCache[w];
@@ -284,11 +306,32 @@ export function renderTable(data, container) {
 
         cell.style.backgroundColor = bgColor;
         cell.style.color = textColor;
+
+        const scoreSpan = document.createElement('span');
+        scoreSpan.className = 'score-value';
+        scoreSpan.textContent = score.toFixed(2);
+        cell.appendChild(scoreSpan);
+
         const rank = weekRankings[w]?.[manager.user_name];
-        cell.innerHTML = `<span class="score-value">${score.toFixed(2)}</span>${rank ? `<span class="score-rank">${rank}</span>` : ''}`;
+        if (rank) {
+          const rankSpan = document.createElement('span');
+          rankSpan.className = 'score-rank';
+          rankSpan.textContent = rank;
+          cell.appendChild(rankSpan);
+        }
+
+        // Close call indicator: within 5 points above chop score (and not the chopped manager)
+        const chopScore = weekly_stats?.[String(w)]?.chop_score;
+        if (chopScore != null && score > chopScore && (score - chopScore) <= 5) {
+          const indicator = document.createElement('span');
+          indicator.className = 'close-call-mark';
+          indicator.title = `Close call: ${(score - chopScore).toFixed(1)} pts above chop`;
+          indicator.textContent = '\u26A0';
+          cell.appendChild(indicator);
+        }
       }
 
-      // Add divider class after weeks 4 and 8
+      // Week dividers
       if (w === 4 || w === 8) {
         cell.classList.add('week-divider');
       }
@@ -299,10 +342,87 @@ export function renderTable(data, container) {
     tbody.appendChild(row);
   });
 
-  // Calculate stats for remaining teams (not chopped yet or chop_week > displayWeek)
+  // --- Summary rows ---
+  const summaryDefs = [
+    { key: 'high_score', label: 'High Score', className: 'summary-high', first: true },
+    { key: 'percentile_75', label: '75th %ile', className: 'summary-75th' },
+    { key: 'median', label: 'Median', className: 'summary-median' },
+    { key: 'percentile_25', label: '25th %ile', className: 'summary-25th' },
+    { key: 'chop_score', label: 'CHOP Score', className: 'summary-chop' },
+    { key: 'chop_differential', label: 'CHOP Diff', className: 'summary-diff' }
+  ];
+
+  summaryDefs.forEach(sr => {
+    const row = document.createElement('tr');
+    row.classList.add('summary-row', sr.className);
+    if (sr.first) {
+      row.classList.add('summary-row-first');
+    }
+
+    // Empty fixed columns
+    const draftEmpty = document.createElement('td');
+    draftEmpty.classList.add('na-cell');
+    row.appendChild(draftEmpty);
+
+    const avgEmpty = document.createElement('td');
+    avgEmpty.classList.add('na-cell');
+    row.appendChild(avgEmpty);
+
+    const faabEmpty = document.createElement('td');
+    faabEmpty.className = 'faab-cell na-cell';
+    row.appendChild(faabEmpty);
+
+    if (hasFaabWasted) {
+      const cell = document.createElement('td');
+      cell.classList.add('na-cell');
+      row.appendChild(cell);
+    }
+
+    if (hasCloseCalls) {
+      const cell = document.createElement('td');
+      cell.classList.add('na-cell');
+      row.appendChild(cell);
+    }
+
+    const chopEmpty = document.createElement('td');
+    chopEmpty.classList.add('na-cell');
+    row.appendChild(chopEmpty);
+
+    // Summary label
+    const labelCell = document.createElement('td');
+    labelCell.className = 'manager-cell';
+    labelCell.textContent = sr.label;
+    row.appendChild(labelCell);
+
+    // Week values
+    for (let w = 1; w <= 17; w++) {
+      const cell = document.createElement('td');
+      const isFutureWeek = w > displayWeek;
+
+      if (isFutureWeek || !weekly_stats[String(w)]) {
+        cell.classList.add('na-cell');
+      } else {
+        const value = weekly_stats[String(w)][sr.key];
+        cell.textContent = value !== null && value !== undefined
+          ? value.toFixed(2)
+          : '-';
+      }
+
+      if (w === 4 || w === 8) {
+        cell.classList.add('week-divider');
+      }
+
+      row.appendChild(cell);
+    }
+
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+
+  // --- Survivor budget stats ---
   const remainingManagers = managers.filter(m => !m.chop_week || m.chop_week > displayWeek);
 
-  // Calculate avg, med, min, max for Avg Pos > Chop and FAAB remaining
   const remainingAvgAboveChop = remainingManagers
     .map(m => m.avg_pos_above_chop ?? m.avg_above_chop)
     .filter(v => typeof v === 'number');
@@ -319,137 +439,75 @@ export function renderTable(data, container) {
     const med = sorted.length % 2 === 0
       ? (sorted[mid - 1] + sorted[mid]) / 2
       : sorted[mid];
-    return {
-      avg: avg,
-      med: med,
-      min: sorted[0],
-      max: sorted[sorted.length - 1]
-    };
+    return { avg, med, min: sorted[0], max: sorted[sorted.length - 1] };
   };
 
   const avgAboveChopStats = calcStats(remainingAvgAboveChop);
   const faabStats = calcStats(remainingFaab);
 
-  // Render summary rows (without budget stats - those go above the table now)
-  const summaryRows = [
-    { key: 'high_score', label: 'High Score', className: 'summary-high', first: true },
-    { key: 'percentile_75', label: '75th %ile', className: 'summary-75th' },
-    { key: 'median', label: 'Median', className: 'summary-median' },
-    { key: 'percentile_25', label: '25th %ile', className: 'summary-25th' },
-    { key: 'chop_score', label: 'CHOP Score', className: 'summary-chop' },
-    { key: 'chop_differential', label: 'CHOP Diff', className: 'summary-diff' }
-  ];
-
-  summaryRows.forEach((sr) => {
-    const row = document.createElement('tr');
-    row.classList.add('summary-row', sr.className);
-    if (sr.first) {
-      row.classList.add('summary-row-first');
-    }
-
-    // Empty cells for fixed columns
-    const draftCell = document.createElement('td');
-    draftCell.classList.add('na-cell');
-    row.appendChild(draftCell);
-
-    // Avg above chop - empty for summary rows
-    const avgCell = document.createElement('td');
-    avgCell.classList.add('na-cell');
-    row.appendChild(avgCell);
-
-    // FAAB remaining - empty for summary rows
-    const faabCell = document.createElement('td');
-    faabCell.className = 'faab-cell na-cell';
-    row.appendChild(faabCell);
-
-    // FAAB wasted (empty, if column exists)
-    if (hasFaabWasted) {
-      const faabWastedCell = document.createElement('td');
-      faabWastedCell.classList.add('na-cell');
-      row.appendChild(faabWastedCell);
-    }
-
-    // Close calls (empty, if column exists)
-    if (hasCloseCalls) {
-      const closeCallsCell = document.createElement('td');
-      closeCallsCell.classList.add('na-cell');
-      row.appendChild(closeCallsCell);
-    }
-
-    // Chop week empty
-    const chopCell = document.createElement('td');
-    chopCell.classList.add('na-cell');
-    row.appendChild(chopCell);
-
-    // Summary label
-    const labelCell = document.createElement('td');
-    labelCell.className = 'manager-cell';
-    labelCell.textContent = sr.label;
-    row.appendChild(labelCell);
-
-    // Week values
-    for (let w = 1; w <= 17; w++) {
-      const cell = document.createElement('td');
-      const isFutureWeek = w > displayWeek;
-
-      if (isFutureWeek || !weekly_stats[String(w)]) {
-        cell.classList.add('na-cell');
-        cell.textContent = '';
-      } else {
-        const value = weekly_stats[String(w)][sr.key];
-        cell.textContent = value !== null && value !== undefined
-          ? value.toFixed(2)
-          : '-';
-      }
-
-      // Add divider class after weeks 4 and 8
-      if (w === 4 || w === 8) {
-        cell.classList.add('week-divider');
-      }
-
-      row.appendChild(cell);
-    }
-
-    tbody.appendChild(row);
-  });
-
-  table.appendChild(tbody);
-
-  // Clear container and add table
-  container.innerHTML = '';
-
-  // Note: Season info is now shown in the table-header-bar element (outside this container)
-  // so we don't need to add a separate banner here
-
-  // Add survivor budget stats above table (only if there are remaining managers)
   if (remainingManagers.length > 0 && faabStats.avg !== null) {
     const budgetStats = document.createElement('div');
     budgetStats.className = 'budget-stats';
-    budgetStats.innerHTML = `
-      <span class="budget-stats-label">Survivor Stats (${remainingManagers.length} remaining):</span>
-      <span class="budget-stat">
-        <span class="stat-label">FAAB</span>
-        <span class="stat-values">
-          avg $${Math.round(faabStats.avg)} &bull;
-          med $${Math.round(faabStats.med)} &bull;
-          min $${Math.round(faabStats.min)} &bull;
-          max $${Math.round(faabStats.max)}
-        </span>
-      </span>
-      <span class="budget-stat">
-        <span class="stat-label">Avg Pos > Chop</span>
-        <span class="stat-values">
-          avg ${avgAboveChopStats.avg?.toFixed(1) || '-'} &bull;
-          med ${avgAboveChopStats.med?.toFixed(1) || '-'} &bull;
-          min ${avgAboveChopStats.min?.toFixed(1) || '-'} &bull;
-          max ${avgAboveChopStats.max?.toFixed(1) || '-'}
-        </span>
-      </span>
-    `;
+
+    const label = document.createElement('span');
+    label.className = 'budget-stats-label';
+    label.textContent = `Survivor Stats (${remainingManagers.length} remaining):`;
+    budgetStats.appendChild(label);
+
+    // FAAB stat
+    const faabStat = document.createElement('span');
+    faabStat.className = 'budget-stat';
+
+    const faabLabel = document.createElement('span');
+    faabLabel.className = 'stat-label';
+    faabLabel.textContent = 'FAAB';
+    faabStat.appendChild(faabLabel);
+
+    const faabValues = document.createElement('span');
+    faabValues.className = 'stat-values';
+    faabValues.innerHTML = `avg $${Math.round(faabStats.avg)} &bull; med $${Math.round(faabStats.med)} &bull; min $${Math.round(faabStats.min)} &bull; max $${Math.round(faabStats.max)}`;
+    faabStat.appendChild(faabValues);
+    budgetStats.appendChild(faabStat);
+
+    // Avg Pos > Chop stat
+    const avgStat = document.createElement('span');
+    avgStat.className = 'budget-stat';
+
+    const avgLabel = document.createElement('span');
+    avgLabel.className = 'stat-label';
+    avgLabel.textContent = 'Avg Pos > Chop';
+    avgStat.appendChild(avgLabel);
+
+    const avgValues = document.createElement('span');
+    avgValues.className = 'stat-values';
+    avgValues.innerHTML = `avg ${avgAboveChopStats.avg?.toFixed(1) || '-'} &bull; med ${avgAboveChopStats.med?.toFixed(1) || '-'} &bull; min ${avgAboveChopStats.min?.toFixed(1) || '-'} &bull; max ${avgAboveChopStats.max?.toFixed(1) || '-'}`;
+    avgStat.appendChild(avgValues);
+    budgetStats.appendChild(avgStat);
+
     container.appendChild(budgetStats);
   }
 
   container.appendChild(table);
+}
+
+/**
+ * Build the season info banner element
+ */
+function buildSeasonInfoBanner(season, rightText) {
+  const banner = document.createElement('div');
+  banner.className = 'season-info';
+
+  const left = document.createElement('span');
+  left.className = 'season-info-left';
+  left.textContent = `Season ${season}`;
+  banner.appendChild(left);
+
+  const right = document.createElement('span');
+  right.className = 'season-info-right';
+  right.textContent = rightText;
+  banner.appendChild(right);
+
+  return banner;
 }
 
 /**
@@ -459,7 +517,6 @@ export function renderTable(data, container) {
  * @param {number} week - Current week
  */
 export async function exportToPNG(container, season, week) {
-  // Add export mode class for better styling
   container.classList.add('export-mode');
 
   try {

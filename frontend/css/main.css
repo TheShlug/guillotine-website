@@ -1439,3 +1439,71 @@ h1, h2, h3, h4 {
     display: flex;
   }
 }
+
+/* Elimination Summary Card */
+.elimination-summary {
+  max-width: 1900px;
+  margin: 0 auto var(--spacing-md);
+  padding: 0 var(--spacing-md);
+}
+
+.elim-inner {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.elimination-summary.champion .elim-inner {
+  border-left-color: var(--color-gold);
+}
+
+.elim-week {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-xs);
+}
+
+.elimination-summary.champion .elim-week {
+  color: var(--color-gold);
+}
+
+.elim-headline {
+  font-family: var(--font-heading, 'Inter', sans-serif);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.elim-detail {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.elim-stats-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
+}
+
+.elim-stat-item {
+  text-align: center;
+}
+
+.elim-stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+}
+
+.elim-stat-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
