@@ -36,10 +36,19 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
     for week in range(1, current_week + 1):
         try:
             matchups = await client.get_matchups(season, week)
-            all_scores[week] = {}
-            for m in matchups:
-                if m.get("points") is not None:
-                    all_scores[week][m["roster_id"]] = m["points"]
+            week_scores = {
+                m["roster_id"]: m["points"]
+                for m in matchups if m.get("points") is not None
+            }
+
+            # Sleeper returns 0.0 for every roster before a week's games have
+            # actually been played, not None - treat that as "not played yet"
+            # rather than a real (and tied) result, or the lowest scorer gets
+            # chopped before any games happen.
+            if week_scores and all(score == 0 for score in week_scores.values()):
+                break
+
+            all_scores[week] = week_scores
         except Exception:
             # Week data not available yet
             break
@@ -271,11 +280,21 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
             "chop_differential": None
         }
 
-    # 8. Determine champion (winner)
-    winner_roster_id = await client.get_winner_roster_id(season)
+    # 8. Determine whether the season has actually finished on Sleeper.
+    # Note: can't use current_week == 17 here, since callers (e.g. the reigning-
+    # champion lookup) may pass week=17 to view an in-progress season's final week.
+    league_info = await client.get_league_info(season)
+    is_season_complete = bool(league_info) and league_info.get("status") == "complete"
+
+    # Determine champion (winner) - only meaningful once the season is complete.
+    # Sleeper's "latest_league_winner_roster_id" metadata carries over from the
+    # previous season until the new one actually finishes, so it can't be trusted
+    # while the season is still in progress.
     champion = None
-    if winner_roster_id:
-        champion = roster_to_user.get(winner_roster_id)
+    if is_season_complete:
+        winner_roster_id = await client.get_winner_roster_id(season)
+        if winner_roster_id:
+            champion = roster_to_user.get(winner_roster_id)
 
     # 8. Build managers list
     managers = []
@@ -324,7 +343,11 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
     total_teams = len(managers)
 
     for manager in managers:
-        if manager["chop_week"] is None:
+        if not is_season_complete:
+            # Finish positions (including "survivor = champion") aren't real
+            # until the season is actually over
+            manager["finish_position"] = None
+        elif manager["chop_week"] is None:
             # Survivor is the champion
             manager["finish_position"] = 1
         else:
@@ -335,6 +358,7 @@ async def process_season_data(client: SleeperClient, season: int, current_week: 
     return {
         "season": season,
         "current_week": current_week,
+        "is_complete": is_season_complete,
         "starting_faab": STARTING_FAAB,
         "champion": champion,
         "managers": managers,

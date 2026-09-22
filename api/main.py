@@ -5,7 +5,7 @@ Serves both the API and static frontend files.
 
 import json
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -220,9 +220,40 @@ async def get_season_transactions(season: int, week: Optional[int] = None):
     all_transactions = []
     weekly_summaries = {}
 
+    # Sleeper tags each transaction with the "leg" (week) that was active when
+    # the claim was *submitted*, not when it was processed. A single waiver
+    # run (identical status_updated) can straddle the league's leg flip and
+    # get split across two week endpoints. Regroup by that shared processing
+    # timestamp so an entire batch is treated as one week's transactions.
+    raw_by_week: Dict[int, List[Dict]] = {}
+    fetch_errors: Dict[int, str] = {}
     for w in range(1, week + 1):
         try:
-            transactions = await sleeper_client.get_transactions(season, w)
+            raw_by_week[w] = await sleeper_client.get_transactions(season, w)
+        except Exception as e:
+            raw_by_week[w] = []
+            fetch_errors[w] = str(e)
+
+    batch_week: Dict[int, int] = {}
+    for w, txns in raw_by_week.items():
+        for txn in txns:
+            su = txn.get("status_updated")
+            if su is not None:
+                batch_week[su] = min(batch_week.get(su, w), w)
+
+    transactions_by_week: Dict[int, List[Dict]] = {w: [] for w in raw_by_week}
+    for w, txns in raw_by_week.items():
+        for txn in txns:
+            su = txn.get("status_updated")
+            transactions_by_week[batch_week.get(su, w) if su is not None else w].append(txn)
+
+    for w in range(1, week + 1):
+        if w in fetch_errors:
+            weekly_summaries[str(w)] = {"error": fetch_errors[w], "total_spent": 0, "num_transactions": 0}
+            continue
+
+        try:
+            transactions = transactions_by_week.get(w, [])
             week_total_spent = 0
             week_transactions = []
 
@@ -546,7 +577,8 @@ async def get_manager_profile(manager_name: str):
                 # Calculate from chop week for older data
                 num_managers = len(data["managers"])
                 finish_pos = num_managers - manager_data["chop_week"] + 1
-            elif not finish_pos and not manager_data.get("chop_week"):
+            elif not finish_pos and not manager_data.get("chop_week") and data.get("is_complete", True):
+                # Still-alive manager only counts as champion once the season is over
                 finish_pos = 1  # Champion
 
             if finish_pos == 1:
